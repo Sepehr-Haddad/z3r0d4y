@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[ZeroDay Cyber Research , 0Day Exploiting   Cyber Defense]]></title>
+  <link href="http://z3r0d4y.com/atom.xml" rel="self"/>
+  <link href="http://z3r0d4y.com/"/>
+  <updated>2015-01-28T09:40:46-05:00</updated>
+  <id>http://z3r0d4y.com/</id>
+  <author>
+    <name><![CDATA[Ali Razmjoo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+</feed>

@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: http://z3r0d4y.com/sitemap.xml
