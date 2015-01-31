@@ -1,0 +1,28 @@
+#!/bin/bash
+WORK_DIR="/var/lib/foo"
+DAEMON="/usr/bin/python"
+ARGS="/root/zeroday.py"
+PIDFILE="/var/run/foo.pid"
+USER="root"
+KILL="/root/kill.py"
+case "$1" in
+  start)
+    echo "Starting server"
+    mkdir -p "$WORK_DIR"
+    start-stop-daemon  --start --pidfile $PIDFILE \
+        --user $USER \
+        -b --make-pidfile \
+        --chuid $USER \
+        --exec $DAEMON $ARGS
+   ;;
+  stop)
+    echo "Stopping server"
+    start-stop-daemon --stop --pidfile $PIDFILE --verbose
+	python $KILL
+    ;;
+  *)
+    echo "Usage: /etc/init.d/$USER {start|stop}"
+    exit 1
+    ;;
+esac
+exit 0
