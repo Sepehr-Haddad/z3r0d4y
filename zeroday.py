@@ -6,12 +6,6 @@ def stop(signum, frame):
     stop_event.set()
 signal.signal(signal.SIGTERM, stop)
 if __name__ == '__main__': #start software
-	Attack = 0
-	outserver = 0
-	outserver_error = 0
-	outserverdisable = 0
-	outserverenable = 0
-	chk_manual = 0
 	while not stop_event.is_set(): #while bash script not stop ....
 		subpro_in = subprocess.Popen(['python','/root/in.py'],stdout=subprocess.PIPE)
 		pid_in = str(subpro_in.pid)
