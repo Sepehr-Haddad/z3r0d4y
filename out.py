@@ -5,7 +5,7 @@ err_c = 0
 while 1:
 	time.sleep(0.5)
 	try:
-		opnurl = urllib2.urlopen('http://z3r0d4y.com').read()
+		opnurl = urllib2.urlopen('http://other-host/check.php').read()
 		E = 1
 		if 'z3r0d4y' in opnurl:
 			E = 0
