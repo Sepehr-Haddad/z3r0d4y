@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#By G3n3Rall 
+#By Ali Razmjoo 
 import os,hashlib,subprocess,signal,time,multiprocessing,time,sys,httplib,pickle,socket,re,urllib2 #import modules
 stop_event = multiprocessing.Event()  #start multiprocessing 
 os.system('ps aux | grep .py > /root/id.txt')
