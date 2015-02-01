@@ -1,19 +1,14 @@
 #!/usr/bin/python
+#By G3n3Rall 
 import os,hashlib,subprocess,signal,time,multiprocessing,time,sys,httplib,pickle,socket,re,urllib2 #import modules
 stop_event = multiprocessing.Event()  #start multiprocessing 
-err_c = 0
-while 1:
-	time.sleep(0.5)
+os.system('ps aux | grep .py > /root/id.txt')
+f = open('/root/id.txt')
+for line in f:
+	line = line.rsplit()
 	try:
-		opnurl = urllib2.urlopen('http://z3r0d4y.com').read()
-		E = 1
-		if 'z3r0d4y' in opnurl:
-			E = 0
+		pid = int(line[1])
+		cmd = 'kill -9 ' + str(pid)
+		os.system(cmd)
 	except:
-		E = 0
-		err_c += 1
-	if E is 1:
-		os.system('python /root/ban.py')
-		err_c = 0
-	if err_c is 100:
-		time.sleep(60)
+		skip = 1
