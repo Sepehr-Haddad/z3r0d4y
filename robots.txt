@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: http://z3r0d4y.com/sitemap.xml
+Sitemap: http://192.168.152.128/sitemap.xml
