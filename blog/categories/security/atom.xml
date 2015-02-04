@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Security | ZeroDay Cyber Research]]></title>
   <link href="http://z3r0d4y.com/blog/categories/security/atom.xml" rel="self"/>
   <link href="http://z3r0d4y.com/"/>
-  <updated>2015-02-04T04:10:18-05:00</updated>
+  <updated>2015-02-04T05:25:39-05:00</updated>
   <id>http://z3r0d4y.com/</id>
   <author>
     <name><![CDATA[Ali Razmjoo]]></name>
@@ -880,7 +880,6 @@ $list_deny = array("</code>&ldquo;,
 &rdquo;-&ldquo;,
 &rdquo;<em>&ldquo;,
 &rdquo;+&ldquo;,
-&rdquo; &ldquo;,
 &rdquo;[&ldquo;,
 &rdquo;]&ldquo;,
 &rdquo;{&ldquo;,
