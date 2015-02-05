@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Linux | ZeroDay Cyber Research]]></title>
   <link href="http://z3r0d4y.com/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://z3r0d4y.com/"/>
-  <updated>2015-02-04T09:01:26-05:00</updated>
+  <updated>2015-02-05T04:53:01-05:00</updated>
   <id>http://z3r0d4y.com/</id>
   <author>
     <name><![CDATA[Ali Razmjoo]]></name>
@@ -18,7 +18,7 @@
     <link href="http://z3r0d4y.com/blog/2015/02/04/how-to-setup-secure-website-for-hackers/"/>
     <updated>2015-02-04T11:00:45-05:00</updated>
     <id>http://z3r0d4y.com/blog/2015/02/04/how-to-setup-secure-website-for-hackers</id>
-    <content type="html"><![CDATA[<p>When security researchers and hackers want to setup a self blog the biggest stress on their brain is what to do for secure their server and site. what if someone come and naughty their servers ? what if server get DDOS attack when they don’t have access to fix up their server and they are outside on travel or maybe with their girl friend ? o.O first mistake , Hackers , Geeks , Programmers and security researches often don’t have girl friend so we skip this reason and replace it with maybe they go for business or something and they cann&rsquo;t access their server for some reason. After some years that I spent my life on information security I release that nothing cannot be secure 100% , But We shouldn&rsquo;t give it up and let others naughty our server and deface our website or maybe make a botnet zombie for DDOS Attack. In past year I decision to do something to remove this stress on my self or make it less and I start to make a mini firewall or something like Robot for secure my server because I don’t trust other firewalls. 99% of firewalls bypass easy and it’s really ridicule that big firewalls from big company mostly skip checking the packets on POST requests. So it’s first reason I decision to secure my server by my own scripts, So keep reading to know more.</p>
+    <content type="html"><![CDATA[<p>When security researchers and hackers want to setup a self blog the biggest stress on their brain is what to do for secure their server and site. what if someone come and naughty their servers ? what if server get DDOS attack when they don’t have access to fix up their server and they are outside on travel or maybe with their girl friend ? o.O first mistake , Hackers , Geeks , Programmers and security researchers often don’t have girl friend so we skip this reason and replace it with maybe they go for business or something and they cann&rsquo;t access their server for some reason. After some years that I spent my life on information security I release that nothing cannot be secure 100% , But We shouldn&rsquo;t give it up and let others naughty our server and deface our website or maybe make a botnet zombie for DDOS Attack. In past year I decision to do something to remove this stress on my self or make it less and I start to make a mini firewall or something like Robot for secure my server because I don’t trust other firewalls. 99% of firewalls bypass easy and it’s really ridicule that big firewalls from big company mostly skip checking the packets on POST requests. So it’s first reason I decision to secure my server by my own scripts, So keep reading to know more.</p>
 
 <!-- more -->
 
