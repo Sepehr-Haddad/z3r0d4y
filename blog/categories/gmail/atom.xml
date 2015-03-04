@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Gmail | ZeroDay Cyber Research]]></title>
   <link href="http://z3r0d4y.com/blog/categories/gmail/atom.xml" rel="self"/>
   <link href="http://z3r0d4y.com/"/>
-  <updated>2015-02-25T07:29:56-05:00</updated>
+  <updated>2015-03-04T06:57:18-05:00</updated>
   <id>http://z3r0d4y.com/</id>
   <author>
     <name><![CDATA[Ali Razmjoo]]></name>
@@ -20,11 +20,20 @@
     <id>http://z3r0d4y.com/blog/2015/02/04/google-bug-gmail-2-step-verification-detector</id>
     <content type="html"><![CDATA[<p>Hello world! [ Include People , Robots, Zombies :D, Space Guys if they exists, and my friends I don&rsquo;t release what kind of things they really are :D (they seems kind of human that have lifetime access to computer) ] By the way today I want write about a Gmail Bug. It&rsquo;s not a vulnerability of Gmail but it&rsquo;s some kind of bug let us know if we hack a Gmail , we can login it or not without alert the Gmail owner. I talking about 2-Step verification , Think about you grab a Gmail password of your girl friend, o.O wrong again hackers don&rsquo;t have girl friend why I make this mistake again, So better think about you just got your victim Gmail password and you not sure to login or not , Because victim maybe use Gmail SMS auth service and when you click login , Google send victim a SMS that include a code for continue login. I got some way to test Gmail account before we login and test it if it have notification or not without he get any SMS. Keep reading for know how to do it.</p>
 
+
+
+
 <!-- more -->
 
 
-<p>As we know , Google SMTP is open for everyone. We can login from anywhere we want. The way is simple, We login from there and check what Gmail SMTP return to us. So now I using a python code to login my account that I activated 2-step protection on that and if anyone login it should send me a SMS.
-<figure class='code'><figcaption><span>gmail.py <a href="https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/gmail.py">https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/gmail.py</a></p></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+
+
+<p>As we know , Google SMTP is open for everyone. We can login from anywhere we want. The way is simple, We login from there and check what Gmail SMTP return to us. So now I using a python code to login my account that I activated 2-step protection on that and if anyone login it should send me a SMS.</p>
+
+
+
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>gmail.py</span><a href='https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/gmail.py'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -45,101 +54,160 @@
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="err">!</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python2</span><span class="o">.</span><span class="mi">7</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">smtplib</span><span class="o">,</span><span class="nn">email</span><span class="o">,</span><span class="nn">os</span><span class="o">,</span><span class="nn">sys</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/python2.7</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">smtplib</span><span class="o">,</span><span class="nn">email</span><span class="o">,</span><span class="nn">os</span><span class="o">,</span><span class="nn">sys</span>
 </span><span class='line'><span class="kn">from</span> <span class="nn">email.MIMEMultipart</span> <span class="kn">import</span> <span class="n">MIMEMultipart</span>
 </span><span class='line'><span class="kn">from</span> <span class="nn">email.Utils</span> <span class="kn">import</span> <span class="n">COMMASPACE</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">email.MIMEText</span> <span class="kn">import</span> <span class="n">MIMEText</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="kn">from</span> <span class="nn">email.MIMEBase</span> <span class="kn">import</span> <span class="n">MIMEBase</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="kn">from</span> <span class="nn">email.parser</span> <span class="kn">import</span> <span class="n">Parser</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="kn">from</span> <span class="nn">email.MIMEImage</span> <span class="kn">import</span> <span class="n">MIMEImage</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="kn">from</span> <span class="nn">email.MIMEAudio</span> <span class="kn">import</span> <span class="n">MIMEAudio</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">mimetypes</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">email</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">email.MIMEText</span> <span class="kn">import</span> <span class="n">MIMEText</span>
+</span><span class='line'><span class="c">#from email.MIMEBase import MIMEBase</span>
+</span><span class='line'><span class="c">#from email.parser import Parser</span>
+</span><span class='line'><span class="c">#from email.MIMEImage import MIMEImage</span>
+</span><span class='line'><span class="c">#from email.MIMEAudio import MIMEAudio</span>
+</span><span class='line'><span class="c">#import mimetypes</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">email</span>
 </span><span class='line'><span class="kn">import</span> <span class="nn">email.mime.application</span>
-</span><span class='line'><span class="n">user</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;&amp;#x6d;&amp;#x61;&amp;#105;&amp;#108;&amp;#116;&amp;#111;&amp;#58;&amp;#120;&amp;#120;&amp;#120;&amp;#x40;&amp;#103;&amp;#109;&amp;#x61;&amp;#x69;&amp;#108;&amp;#x2e;&amp;#99;&amp;#x6f;&amp;#x6d;&quot;</span><span class="o">&gt;&amp;</span><span class="c">#x78;&amp;#120;&amp;#120;&amp;#x40;&amp;#x67;&amp;#x6d;&amp;#97;&amp;#x69;&amp;#108;&amp;#x2e;&amp;#x63;&amp;#x6f;&amp;#109;&lt;/a&gt;&amp;rsquo;</span>
-</span><span class='line'><span class="n">passw</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">xxx</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span>
-</span><span class='line'><span class="n">smtp_host</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">smtp</span><span class="o">.</span><span class="n">gmail</span><span class="o">.</span><span class="n">com</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span>
+</span><span class='line'><span class="n">user</span> <span class="o">=</span> <span class="s">&#39;xxx@gmail.com&#39;</span>
+</span><span class='line'><span class="n">passw</span> <span class="o">=</span> <span class="s">&#39;xxx&#39;</span>
+</span><span class='line'><span class="n">smtp_host</span> <span class="o">=</span> <span class="s">&#39;smtp.gmail.com&#39;</span>
 </span><span class='line'><span class="n">smtp_port</span> <span class="o">=</span> <span class="mi">587</span>
 </span><span class='line'><span class="n">server</span> <span class="o">=</span> <span class="n">smtplib</span><span class="o">.</span><span class="n">SMTP</span><span class="p">()</span>
 </span><span class='line'><span class="n">server</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">smtp_host</span><span class="p">,</span><span class="n">smtp_port</span><span class="p">)</span>
 </span><span class='line'><span class="n">server</span><span class="o">.</span><span class="n">ehlo</span><span class="p">()</span>
 </span><span class='line'><span class="n">server</span><span class="o">.</span><span class="n">starttls</span><span class="p">()</span>
 </span><span class='line'><span class="n">server</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="n">passw</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></p>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+
 
 <p>And when run the script my result was:</p>
 
-<pre><code class="python">Traceback (most recent call last):
-  File "C:\Users\Ali\Desktop\gmail.py", line 22, in &lt;module&gt;
-    server.login(user,passw)
-  File "C:\Python27\lib\smtplib.py", line 614, in login
-    raise SMTPAuthenticationError(code, resp)
-smtplib.SMTPAuthenticationError: (534, '5.7.9 Application-specific password requ
-ired. Learn more at\n5.7.9 http://support.google.com/accounts/bin/answer.py?answ
-er=185833 w3sm2453216wjf.3 - gsmtp')
-</code></pre>
 
-<p>Ohhh , Greate , because it&rsquo;s just telling me check out app password url and didn&rsquo;t send me any SMS. So it mean my password isn&rsquo;t wrong ! But to be sure I going to test this with wrong password.
-<code>python
-Traceback (most recent call last):
-  File "C:\Users\Ali\Desktop\gmail.py", line 22, in &lt;module&gt;
-    a = server.login(user,passw)
-  File "C:\Python27\lib\smtplib.py", line 614, in login
-    raise SMTPAuthenticationError(code, resp)
-smtplib.SMTPAuthenticationError: (535, '5.7.8 Username and Password not accepted
-. Learn more at\n5.7.8 http://support.google.com/mail/bin/answer.py?answer=14257
- bv6sm2577733wjb.30 - gsmtp')
-</code></p>
 
-<p>Now you can see different error. And let me test with other gmail long time I didn&rsquo;t use.
-<code>python
-Traceback (most recent call last):
-  File "C:\Users\Ali\Desktop\gmail.py", line 22, in &lt;module&gt;
-    a = server.login(user,passw)
-  File "C:\Python27\lib\smtplib.py", line 614, in login
-    raise SMTPAuthenticationError(code, resp)
-smtplib.SMTPAuthenticationError: (534, '5.7.14 &lt;https://accounts.google.com/Cont
-inueSignIn?sarp=1&amp;scc=1&amp;plt=AKgnsbu3u\n5.7.14 pntQhm8PgwhQoRK6G4JaqbL5rcYK91sfB3
-SZJZlGQcF2y3WXgUa9vOyex8KMlF-labONEg\n5.7.14 -yKrWWgN7PtH55A1TqK3e1gfitBHKmghSUW
-4AgNsmZ6qASoci8_lqhS6MCLniXpgqW_OPs\n5.7.14 dLg2YvDJ_QZpRQRV_i0l82hy22KcvUvDwscq
-ENWFs-dk6nrJrF_thrThuzS555KIFMnkEk\n5.7.14 wueyxESEpgPC6RGqcwl9Pfo4kWTg&gt; Please
-log in via your web browser and\n5.7.14 then try again.\n5.7.14 Learn more at\n5
-.7.14 https://support.google.com/mail/bin/answer.py?answer=78754 bv6sm2501216wjb
-.30 - gsmtp')
-</code>
-Now Google telling me login with the browser. I don&rsquo;t care about that. But wait ! What if we use a Gmail account that we didn&rsquo;t ever use on our PC before. So I calling my friend now and take his Gmail password. And See the result.
-<code>python
-Traceback (most recent call last):
-  File "C:\Users\Ali\Desktop\gmail.py", line 22, in &lt;module&gt;
-    a = server.login(user,passw)
-  File "C:\Python27\lib\smtplib.py", line 614, in login
-    raise SMTPAuthenticationError(code, resp)
-smtplib.SMTPAuthenticationError: (534, '5.7.9 Application-specific password requ
-ired. Learn more at\n5.7.9 http://support.google.com/accounts/bin/answer.py?answ
-er=185833 bo3sm2561309wjb.44 - gsmtp')
-</code>
-It seems my friend get me true password but he activated Gmail SMS Auth. So now we can see Google didn&rsquo;t try hard on this way. So when we have true password we can login and steal informations and if using Gmail SMS Auth but still we know what&rsquo;s true password just we need a little social engineering for login and steal information.
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">File</span> <span class="s">&quot;C:\Users\Ali\Desktop\gmail.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">22</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+</span><span class='line'>    <span class="n">server</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="n">passw</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">File</span> <span class="s">&quot;C:\Python27\lib\smtplib.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">614</span><span class="p">,</span> <span class="ow">in</span> <span class="n">login</span>
+</span><span class='line'>    <span class="k">raise</span> <span class="n">SMTPAuthenticationError</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+</span><span class='line'><span class="n">smtplib</span><span class="o">.</span><span class="n">SMTPAuthenticationError</span><span class="p">:</span> <span class="p">(</span><span class="mi">534</span><span class="p">,</span> <span class="s">&#39;5.7.9 Application-specific password requ</span>
+</span><span class='line'><span class="n">ired</span><span class="o">.</span> <span class="n">Learn</span> <span class="n">more</span> <span class="n">at</span>\<span class="n">n5</span><span class="o">.</span><span class="mf">7.9</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">support</span><span class="o">.</span><span class="n">google</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">accounts</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">answer</span><span class="o">.</span><span class="n">py</span><span class="err">?</span><span class="n">answ</span>
+</span><span class='line'><span class="n">er</span><span class="o">=</span><span class="mi">185833</span> <span class="n">w3sm2453216wjf</span><span class="o">.</span><span class="mi">3</span> <span class="o">-</span> <span class="n">gsmtp</span><span class="s">&#39;)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+
+
+<p>Ohhh , Greate , because it&rsquo;s just telling me check out app password url and didn&rsquo;t send me any SMS. So it mean my password isn&rsquo;t wrong ! But to be sure I going to test this with wrong password.</p>
+
+
+
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">File</span> <span class="s">&quot;C:\Users\Ali\Desktop\gmail.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">22</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+</span><span class='line'>    <span class="n">a</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="n">passw</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">File</span> <span class="s">&quot;C:\Python27\lib\smtplib.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">614</span><span class="p">,</span> <span class="ow">in</span> <span class="n">login</span>
+</span><span class='line'>    <span class="k">raise</span> <span class="n">SMTPAuthenticationError</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+</span><span class='line'><span class="n">smtplib</span><span class="o">.</span><span class="n">SMTPAuthenticationError</span><span class="p">:</span> <span class="p">(</span><span class="mi">535</span><span class="p">,</span> <span class="s">&#39;5.7.8 Username and Password not accepted</span>
+</span><span class='line'><span class="o">.</span> <span class="n">Learn</span> <span class="n">more</span> <span class="n">at</span>\<span class="n">n5</span><span class="o">.</span><span class="mf">7.8</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">support</span><span class="o">.</span><span class="n">google</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">mail</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">answer</span><span class="o">.</span><span class="n">py</span><span class="err">?</span><span class="n">answer</span><span class="o">=</span><span class="mi">14257</span>
+</span><span class='line'> <span class="n">bv6sm2577733wjb</span><span class="o">.</span><span class="mi">30</span> <span class="o">-</span> <span class="n">gsmtp</span><span class="s">&#39;)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+
+
+<p>Now you can see different error. And let me test with other gmail long time I didn&rsquo;t use.</p>
+
+
+
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">File</span> <span class="s">&quot;C:\Users\Ali\Desktop\gmail.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">22</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+</span><span class='line'>    <span class="n">a</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="n">passw</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">File</span> <span class="s">&quot;C:\Python27\lib\smtplib.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">614</span><span class="p">,</span> <span class="ow">in</span> <span class="n">login</span>
+</span><span class='line'>    <span class="k">raise</span> <span class="n">SMTPAuthenticationError</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+</span><span class='line'><span class="n">smtplib</span><span class="o">.</span><span class="n">SMTPAuthenticationError</span><span class="p">:</span> <span class="p">(</span><span class="mi">534</span><span class="p">,</span> <span class="s">&#39;5.7.14 &lt;https://accounts.google.com/Cont</span>
+</span><span class='line'><span class="n">inueSignIn</span><span class="err">?</span><span class="n">sarp</span><span class="o">=</span><span class="mi">1</span><span class="o">&amp;</span><span class="n">scc</span><span class="o">=</span><span class="mi">1</span><span class="o">&amp;</span><span class="n">plt</span><span class="o">=</span><span class="n">AKgnsbu3u</span>\<span class="n">n5</span><span class="o">.</span><span class="mf">7.14</span> <span class="n">pntQhm8PgwhQoRK6G4JaqbL5rcYK91sfB3</span>
+</span><span class='line'><span class="n">SZJZlGQcF2y3WXgUa9vOyex8KMlF</span><span class="o">-</span><span class="n">labONEg</span>\<span class="n">n5</span><span class="o">.</span><span class="mf">7.14</span> <span class="o">-</span><span class="n">yKrWWgN7PtH55A1TqK3e1gfitBHKmghSUW</span>
+</span><span class='line'><span class="mi">4</span><span class="n">AgNsmZ6qASoci8_lqhS6MCLniXpgqW_OPs</span>\<span class="n">n5</span><span class="o">.</span><span class="mf">7.14</span> <span class="n">dLg2YvDJ_QZpRQRV_i0l82hy22KcvUvDwscq</span>
+</span><span class='line'><span class="n">ENWFs</span><span class="o">-</span><span class="n">dk6nrJrF_thrThuzS555KIFMnkEk</span>\<span class="n">n5</span><span class="o">.</span><span class="mf">7.14</span> <span class="n">wueyxESEpgPC6RGqcwl9Pfo4kWTg</span><span class="o">&gt;</span> <span class="n">Please</span>
+</span><span class='line'><span class="n">log</span> <span class="ow">in</span> <span class="n">via</span> <span class="n">your</span> <span class="n">web</span> <span class="n">browser</span> <span class="ow">and</span>\<span class="n">n5</span><span class="o">.</span><span class="mf">7.14</span> <span class="n">then</span> <span class="k">try</span> <span class="n">again</span><span class="o">.</span>\<span class="n">n5</span><span class="o">.</span><span class="mf">7.14</span> <span class="n">Learn</span> <span class="n">more</span> <span class="n">at</span>\<span class="n">n5</span>
+</span><span class='line'><span class="o">.</span><span class="mf">7.14</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">support</span><span class="o">.</span><span class="n">google</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">mail</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">answer</span><span class="o">.</span><span class="n">py</span><span class="err">?</span><span class="n">answer</span><span class="o">=</span><span class="mi">78754</span> <span class="n">bv6sm2501216wjb</span>
+</span><span class='line'><span class="o">.</span><span class="mi">30</span> <span class="o">-</span> <span class="n">gsmtp</span><span class="s">&#39;)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+
+
+<p>Now Google telling me login with the browser. I don&rsquo;t care about that. But wait ! What if we use a Gmail account that we didn&rsquo;t ever use on our PC before. So I calling my friend now and take his Gmail password. And See the result.</p>
+
+
+
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">File</span> <span class="s">&quot;C:\Users\Ali\Desktop\gmail.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">22</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+</span><span class='line'>    <span class="n">a</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="n">passw</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">File</span> <span class="s">&quot;C:\Python27\lib\smtplib.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">614</span><span class="p">,</span> <span class="ow">in</span> <span class="n">login</span>
+</span><span class='line'>    <span class="k">raise</span> <span class="n">SMTPAuthenticationError</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+</span><span class='line'><span class="n">smtplib</span><span class="o">.</span><span class="n">SMTPAuthenticationError</span><span class="p">:</span> <span class="p">(</span><span class="mi">534</span><span class="p">,</span> <span class="s">&#39;5.7.9 Application-specific password requ</span>
+</span><span class='line'><span class="n">ired</span><span class="o">.</span> <span class="n">Learn</span> <span class="n">more</span> <span class="n">at</span>\<span class="n">n5</span><span class="o">.</span><span class="mf">7.9</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">support</span><span class="o">.</span><span class="n">google</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">accounts</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">answer</span><span class="o">.</span><span class="n">py</span><span class="err">?</span><span class="n">answ</span>
+</span><span class='line'><span class="n">er</span><span class="o">=</span><span class="mi">185833</span> <span class="n">bo3sm2561309wjb</span><span class="o">.</span><span class="mi">44</span> <span class="o">-</span> <span class="n">gsmtp</span><span class="s">&#39;)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+
+
+<p>It seems my friend get me true password but he activated Gmail SMS Auth. So now we can see Google didn&rsquo;t try hard on this way. So when we have true password we can login and steal informations and if using Gmail SMS Auth but still we know what&rsquo;s true password just we need a little social engineering for login and steal information.
 <br>
 All we need now it&rsquo;s a script for make it automatic check the Gmail account just login with this script and read error to see what happe. If you think I going to make a automatic script for you and put code here , you are so wrong because I&rsquo;m so more lazy than you think.</p>
 
+
+
+
 <p><a href="mailto:Ali[dot]Razmjoo1994[at]Gmail[dot]Com">Ali Razmjoo</a></p>
 
+
+
+
 <p><br><br><br>Last edit on: 2015/2/24 @18:53</p>
+
 ]]></content>
   </entry>
   

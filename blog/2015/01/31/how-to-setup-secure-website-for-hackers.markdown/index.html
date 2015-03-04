@@ -1,0 +1,624 @@
+-
+layout: post
+title: &#8220;How to setup secure website for hackers&#8221;
+date: &#8220;2015-02-04 11:00:45 -0500&#8221;
+comments: true
+categories: [Security, Linux, WAF, Python, Config]
+keywords: &#8220;z3r0d4y.com,z3r0d4y,0day,Linux Security, Secure Config, WAF, Python, ZeroDay, Firewall, Secure Site,how to&#8221;
+description: &#8220;When security researchers and hackers want to setup a self blog the biggest stress on their brain is what to do for secure their server and site. what if someone come and naughty their server(s) ?&#8221; 
+&#8212;
+When security researchers and hackers want to setup a self blog the biggest stress on their brain is what to do for secure their server and site. what if someone come and naughty their server(s) ? what if server get [DOS](http://en.wikipedia.org/wiki/Denial-of-service_attack)/[DDOS](http://www.techopedia.com/definition/10261/distributed-denial-of-service-ddos) attack when they don’t have access to fix up their server(s) and they are outside on travel or maybe with their girl friend !? o.O first mistake , Hackers , Geeks , Programmers and security researchers often don’t have girl friend so we skip this reason and replace it with maybe they go for business or something and they cann&#8217;t access their server(s) for some reason. After some years that I spent my life on information security I release that nothing cannot be secure 100% , But We shouldn&#8217;t give it up and let others naughty our server and deface our website or maybe make us a botnet zombie for DOS/DDOS Attack. In past year I decision to do something to remove this stress on my self or make it less and I start to make a mini firewall or something like Robot for secure my server and sure I don’t trust other firewalls. 99% of firewalls bypass easy and it’s really ridicule that firewalls from big companies mostly skip checking the packets on POST requests. So that&#8217;s first reason I decision to secure my server by my own scripts, and if you want to know more , keep reading.
+<!-- more -->
+At first We must to know , what do we have and what do we want? my first decision to secure my website is that I build my website on my own VPS and don&#8217;t share VPS with anyone else, so Don’t use a share hosting for your site if it’s important for you and by the way this method I want to talk about cann&#8217;t be use for share hosting and it will make you in trouble if you share your VPS with someone else. Second decision is choose a operation system and a website platform for yourself, I chosen CentOS for my Server OS and WordPress for my blogging. Notice , you can choose anything , But after you read this article you must to know how edit source codes and match them with other website platform or OS. By the way I get a VPS that have a Console Access [Hardware Access + Emergency SSH or Emergency VNC] and I install a Panel [ For Example [CPanel X (WHM/CPANEL)](http://cpanel.net/) ] and panel installer will automatically install anything  that need to be install on Server. That was first Step for lazy guys and if you like , you can install anything you need with terminal on SSH or anyway you like. Just setup your website and after That install your Wordpress [or anything you want]. Okay Here we go. Now what you need to Secure:<br><br>1- WebServer
+<br>2- Your Blogging(or maybe forum or &#8230;) Platform
+<br>3- PHP
+<br>4- Set Permissions
+<br>5- Make a Mini Robot And a mini WAF 
+<br>6- Other Service if you use [For Example SSH , I will explain this in at the end of this article]
+
+
+
+For start I&#8217;ve to say i don&#8217;t want to teach from begining of securing or config server so you most have little knowlage when you reading this article.For protect your webserver from DOS/DDOS attack if you using Apache [httpd] [Apache webserver is just a example] you really need to install [Anti Slowloris](http://blog.secaserver.com/2011/08/protect-apache-slowloris-attack/) first. Maybe you hear [Slowloris](http://ha.ckers.org/slowloris/slowloris.pl) before it&#8217;s a [DOS/DDOS Script](http://ha.ckers.org/slowloris/slowloris.pl) for attack on Apache webserver and easily can take down the Apache webserver [I dont want to talk about how this script work so dont need explain much about it]. So now how to install This ? 
+<br>Fallow these commands:
+&#8220;`bash
+mkdir zeroday
+cd zeroday
+wget http://sourceforge.net/projects/mod-antiloris/files/mod_antiloris-0.4.tar.bz2/download
+tar -xvjf mod_antiloris-0.4.tar.bz2
+cd mod_antiloris-0.4
+apxs -a -i -c mod_antiloris.c
+service httpd restart
+&#8220;`
+
+If your Centos Doesn&#8217;t have apxs so you need to fallow these commands:
+&#8220;`bash
+yum install php-pear
+yum install php-devel
+yum install httpd-devel
+pecl install apc
+echo &#8220;extension=apc.so&#8221; > /etc/php.d/apc.ini
+service httpd restart
+&#8220;`
+And again if show you any error about php-devel or httpd-devel don&#8217;t give up and install these from rpm packages From [vault.centos.org](http://vault.centos.org/5.3/updates/x86_64/RPMS/).<br>
+
+The next step for config your webserver ,You need to off the webserver signature to don&#8217;t get others much information about webserver modules.
+so find the httpd.conf and then open it and search the &#8220;ServerSignature On&#8221; , replace with &#8220;ServerSignature Off&#8221; and add &#8220;ServerTokens Prod&#8221; or &#8220;ServerTokens Email&#8221; [Webmaster or Admin Email].
+
+For next Step is Disable the CGI and Directory Listing and you need to Add &#8220;Options  -Indexes -ExecCGI &#8230;&#8221; , If you do it before you know how to do these things and if not , Beginners can learn from this [URL](http://www.petefreitag.com/item/505.cfm).
+
+Notice: In that url I shared for beginners said about &#8220;mod_security&#8221; and I suggest you don&#8217;t install or active it, sometimes it&#8217;s not good for poor servers and in DDOS attacks it gonna help for make website go offline [Effect on crash or use much system processing].
+
+And now PHP config time,  all you need is set some disable functions and turn on safe mode and disable errors to not show path and user, and other one is to disallow url opening with fopen.
+I just made a list for disable function you can use it.
+&#8220;`php
+socket_last_error,pcntl_wexitstatus,socket_recvfrom,pcntl_wifexited,socket_getpeername,posix_mknod,base64_decode,pcntl_wtermsig,imap_list,php_uname,openlog,stream_socket_client,imap_open,socket_create,proc_get_status,posix_isatty,group,stream_copy_to_stream,posix_getrlimit,fwrite,pfsockopen,pfsockopenproc_nice,is_writable,socket_write,socket_read,posix_mkfifo,posix_initgroups,stream_get_wrappers,dl,posix_getpwnam,posix_getgrgid,stream_filter_append,posix_getgid,posix_getcwd,posix_getgroups,chmod,socket_set_block,pcntl_wstopsig,socket_writereadlink,stream_set_blocking,stream_context_create,rewinddir,proc_terminate,stream_get_filters,pcntl_signal,dlopenlog,stream_select,curl_getinfo,posix_geteuid,stream_socket_recvfrom,error_log,socket_select,shell_exec,apache_getenv,gzinflate,dir,posix_getpwuid,tmpfile,GETCWD(),stream_resolve_include_path,socket_clear_error,pcntl_wifstopped,syslog,stream_context_set_option,stream_socket_accept,getmypid,cpanel_check,stream_socket_shutdown,apache_note,purepass,posix_getsid,leak,phpinfo,stream_socket_pair,posix_setegid,socket_set_nonblock,reg_glob,escapeshellcmd,gzuncompress,pureuser,show_source,apache_get_version,posix_getlogin,posix_ctermid,posix_kill,socket_accept,posix_getppid,symlink,timearray,pcntl_waitpid,getmygid,posix_ttyname,diskfreespace,popen,stream_socket_sendto,apache_setenv,stream_context_set_params,stream_filter_register,posix_access,socket_set_option,stream_context_get_default,posix_errno,posix_times,posix_setuid,socket_get_option,ftp_check,stream_socket_enable_crypto,port_bind_bd_c,proc_open,pcntl_wifsignaled,proc_deutf,posix_seteuid,posix_uname,get_current_user,socket_create_pair,proc_nice,curl_errno,socket_sendsocket_sendto,mkdir,system,stream_get_line,posix_getpid,highlight_file,socket_create_listen,mysql_list_dbs,listen,imap_body,shell,ini_alter,posix_setpgid,socket_bind,link,getmyuid,posix_getpgid,ini_restore,posix_setsid,stream_set_write_buffer,posix_getegid,eof_ctrl_dir,getrusage,stream_set_timeout,ini_get_all,apache_get_modules,stream_socket_server,stream_filter_remove,posix_setgid,proc_close,socket_shutdown,socket_listen,stream_encoding,posix_getgrnam,stream_wrapper_unregister,stream_get_meta_data,getmicrotime,fpassthru,socket_recv,virtual,chgrp,presets_rlph,posix_getuid,stream_filter_prepend,stream_get_transports,stream_context_get_options,set_time_limit,exec,posix_getpgrp,stream_register_wrapper,stream_socket_get_name,stream_bucket_new,posix_get_last_error,gethostbyname,getcwd(),chroot,socket_close,escapeshellarg,fsockopen,passthru,stream_wrapper_register,socket_strerror,stream_get_contents,stream_wrapper_restore,pcntl_exec,socket_connect,stream_bucket_prepend,chown,posix_strerror,curl_multi_exec,pcntl_fork,apache_child_terminate
+&#8220;`
+and  beginners can check [HERE](http://www.madirish.net/199) for getting help and learn how to do these things.
+
+Until now anything I said was simple and not any special things and also maybe easy to bypass, But don’t hurry up. let me explain more and then we continue. With that disable functions and php config we disabled the RCE vulnerabilities and something more that you know they appear with those functions, And now, Copy this python script in your public_html folder and run it. It’s going to change file and folder permissions [remove write permission]. After you setup your website and finish you must close write permission on every folder and files in public_html. On this way no one cannot upload anything on your website and if you want to upload anything you have to upload on database or if want to upload in the public_html folder you must open permission for seconds and upload your files and close it again, Now We know that uploading and file wrting begin disable on our server in easy way.
+
+&#8220;`python Perm.py https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/perm.py
+import os
+#Ali Razmjoo
+for dirname, dirnames, filenames in os.walk(&#8216;/home/zeroday/public_html/&#8217;): #change directory or copy file to public_html directory and set directory (&#8216;.&#8217;)
+        for subdirname in dirnames:
+                f = os.path.join(dirname, subdirname)
+                f = f[2:]
+                cmd = &#8216;chmod 555 &#8217; + str(f) #555 Perm for Folders
+                os.system(cmd)
+        for filename in filenames:
+                f = os.path.join(dirname, filename)
+                f = f[2:]
+                cmd = &#8216;chmod 444 &#8217; + str(f) #444 Perm for Files
+                os.system(cmd)
+&#8220;`
+
+Note: This script set 555 permission for folders and 444 for files.
+<br>Note: All scripts not coded in professional coding mode so take it easy. I wrote them so fast.
+
+Now it’s time for our little baby robot. What does it have to do for us? How does it work? I made a mini robot that add a service named “zeroday” in your OS [Linux base] and then open some Subprocess and start working , what’s his job ? 
+
+<b>1- Check for DOS/DDOS attack from inside and outside 
+<br>2- Check MD5 for public_html files 
+<br>
+<br>And now about source codes and explain. At first you must create file with name “zeroday” in /etc/init.d/ zeroday is begin your service name. [work with command “service zeroday start/stop”] and here is sourcode code.
+<br>Note: You can choose a different service name [&#8216;zeroday&#8217; or anything you like].
+
+&#8220;`bash zeroday https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/zeroday
+#!/bin/bash
+#found on google
+WORK_DIR=&#8221;/var/lib/foo&#8221;
+DAEMON=&#8221;/usr/bin/python&#8221;
+ARGS=&#8221;/root/zeroday.py&#8221;  
+PIDFILE=&#8221;/var/run/foo.pid&#8221;
+USER=&#8221;root&#8221; #you must run this process as root
+KILL=&#8221;/root/kill.py&#8221;
+case &#8220;$1&#8221; in
+  start)
+    echo &#8220;Starting server&#8221;
+    mkdir -p &#8220;$WORK_DIR&#8221;
+    start-stop-daemon  &#8211;start &#8211;pidfile $PIDFILE \  
+        &#8211;user $USER \
+        -b &#8211;make-pidfile \
+        &#8211;chuid $USER \
+        &#8211;exec $DAEMON $ARGS
+   ;;
+  stop)
+    echo &#8220;Stopping server&#8221;
+    start-stop-daemon &#8211;stop &#8211;pidfile $PIDFILE &#8211;verbose
+	python $KILL
+    ;;
+  *)
+    echo &#8220;Usage: /etc/init.d/$USER {start|stop}&#8221;
+    exit 1
+    ;;
+esac
+exit 0
+&#8220;`
+Explain this code:
+<br>I found this code in google and it&#8217;s gonna help us make a service very easy on linux.
+<br>Look at this like:
+&#8220;`bash
+ARGS=&#8221;/root/zeroday.py&#8221;
+&#8220;`
+zeroday.py is main starting script of robot.
+&#8220;`bash
+KILL=&#8221;/root/kill.py&#8221;
+&#8220;`
+kill.py execute when we want stop robot[service].
+<br><br>Note: You must create these files in same directory or change directory in service bash script.
+<br>Note: As you see in line 12 , we must install &#8216;start-stop-daemon&#8217; so download and install it.
+<br><br>Download Daemon tools:
+&#8220;`bash
+wget https://raw.githubusercontent.com/Ali-Razmjoo/z3r0d4y/master/daemon.zip
+unzip daemon.zip
+cd daemon
+make
+&#8220;`
+And if you get any error, or you don&#8217;t have gcc:
+&#8220;`bash
+yum install gcc
+gcc start-stop-daemon.c -o start-stop-daemon
+cp start-stop-daemon /usr/sbin/
+chmod 755 /usr/sbin/start-stop-daemon
+&#8220;`
+And daemon installed.<br><br>
+Now the main python file for start all subprocess together.
+source code :
+&#8220;`python zeroday.py https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/zeroday.py
+#!/usr/bin/python
+#Ali Razmjoo 
+import os,hashlib,subprocess,signal,time,multiprocessing,time,sys,httplib,pickle,socket,re,urllib2 #import modules
+stop_event = multiprocessing.Event()  #start multiprocessing
+def stop(signum, frame):
+    stop_event.set()
+signal.signal(signal.SIGTERM, stop)
+if __name__ == &#8216;__main__&#8217;: #start software
+	while not stop_event.is_set(): #while bash script not stop &#8230;.
+		subpro_in = subprocess.Popen([&#8216;python&#8217;,&#8217;/root/in.py&#8217;],stdout=subprocess.PIPE)
+		pid_in = str(subpro_in.pid)
+		subpro_out = subprocess.Popen([&#8216;python&#8217;,&#8217;/root/out.py&#8217;],stdout=subprocess.PIPE)
+		pid_out = str(subpro_out.pid)
+		subpro_24 = subprocess.Popen([&#8216;python&#8217;,&#8217;/root/24ban.py&#8217;],stdout=subprocess.PIPE)
+		pid_24 = str(subpro_24.pid)		
+		subpro_md5 = subprocess.Popen([&#8216;python&#8217;,&#8217;/root/md5.py&#8217;],stdout=subprocess.PIPE)
+		pid_md5 = str(subpro_md5.pid)		
+		while 1:
+			loop = 1          #keep this process active
+			time.sleep(1000)
+&#8220;`
+Note: Copy this script in /root/ directory, If you want change directory, Don&#8217;t forget to change it in source codes too.
+<br>and other files you need to have in root directory:
+&#8220;`python 24ban.py https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/24ban.py
+
+#!/usr/bin/python 
+import os,hashlib,subprocess,signal,time,multiprocessing,time,sys,httplib,pickle,socket,re,urllib2 #import modules
+stop_event = multiprocessing.Event() 
+while 1:
+	time.sleep(120)
+	os.system(&#8216;netstat -ntu | awk &#39;{print $5}&#39; | cut -d: -f1 | sort | uniq -c | sort -n >> /root/IPz.txt&#8217;) 
+	file = open(&#8216;/root/IPz.txt&#8217;)  
+	for line in file:
+		ip = line
+		Ban = 0
+		word_num = 0
+		words = ip.split()
+		for text_word in words:
+			word_num += 1
+			if word_num is 1:
+				if int(text_word) > 20: 
+					Ban = 1
+				if word_num is 2:
+					if Ban is 1:
+						if &#8216;.&#8217; in text_word:
+							skip = 0
+							if &#8216;127.0.0.1&#8217; or &#8216;176.9.183.142&#8217; or &#8216;79.175.163.84&#8217; in text_word:  #replace your ip address
+								skip = 1
+							if skip is 0:	
+								deny = &#8216;iptables -I INPUT -s %s -j DROP&#8217; %text_word # it use iptables to ban users
+								os.system(deny)
+								deny = &#8216;iptables -A INPUT  -s %s -j DROP&#8217; %text_word
+								os.system(deny)
+								os.system(&#8216;service iptables-persistent save&#8217;)
+								os.system(&#8216;service iptables-persistent restart&#8217;)
+								ipsave = open(&#8216;/root/Banned.txt&#8217;,&#8217;a&#8217;) #save ip banned for me
+								ip_add = text_word + &#8216;\n&#8217;
+								ipsave.write(ip_add)
+								ipsave.close()	
+	os.system(&#8216;rm -rf /root/IPz.txt&#8217;)		
+&#8220;`
+Note: Change exceptions IP to anything you want.
+<br>Note: This file find the IPs that have much threads on server and it going to block them.
+<br>Note: You can see block IPs in /root/Banned.txt
+<br>Note: This script will check your server every 120 seconds. Why ? Maybe someone trying for DOS/DDOS attack but attack not begin success yet. So it will check and block them too.
+<br><br>
+This file will check the MD5 of public_html files and folders, If any file or folder change/add/remove Robot will Stop Apache. So you cannot be deface.
+&#8220;`python md5.py https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/md5.py
+#!/usr/bin/python
+#By Ali Razmjoo 
+import os,hashlib,subprocess,signal,time,multiprocessing,time,sys,httplib,pickle,socket,re,urllib2 #import modules
+stop_event = multiprocessing.Event()  #start multiprocessing
+def stop(signum, frame):
+    stop_event.set()
+signal.signal(signal.SIGTERM, stop)
+if __name__ == &#8216;__main__&#8217;: #start software
+	while not stop_event.is_set(): #while bash script not stop &#8230;.
+		time.sleep(0.6)
+		os.system(&#8216;rm -rf /home/size_public_html&#8217;)
+		f = open(&#8216;/home/size_public_html&#8217;,&#8217;a&#8217;)
+		for dirname, dirnames, filenames in os.walk(&#8216;/home/z3r0d4y/public_html/&#8217;):
+			F = 0
+			A = 0
+			C = 1
+			D = 1
+			for subdirname in dirnames:
+				A = os.path.join(dirname, subdirname)
+				if &#8216;error_log&#8217; in A:
+					C = 0
+				if &#8216;access_log&#8217; in A:
+					if &#8216;data&#8217; in A:
+						C = 0
+				if C is 1:
+					if &#8216;public_html/&#8217; in A:
+						size = os.path.getsize(A)
+						wr = str(size) + &#8216;:::&#8217; + str(A) + &#8216;\n&#8217;
+						f.write(wr)
+				C = 1
+			for filename in filenames:
+				F = os.path.join(dirname, filename)
+				if &#8216;error_log&#8217; in F:
+					D = 0
+				if &#8216;access_log&#8217; in F:
+					D = 0
+				if D is 1:
+					if &#8216;public_html/&#8217; in F:
+						try:
+							size = os.path.getsize(F)
+							wr = str(size) + &#8216;:::&#8217; + str(F) + &#8216;\n&#8217;
+							f.write(wr)
+						except:
+							e = 1
+				D = 1
+		f.close()
+		hash = open(&#8216;/home/size_public_html&#8217;).read()
+		md5 = hashlib.md5(hash).hexdigest()
+		print md5
+		os.system(&#8216;rm -rf /home/size_public_html&#8217;)
+		L = 1
+		if &#8216;9c5302d7c4115dcc4b66da2d5def389c&#8217; in md5:
+			L = 0
+		if L is 1:
+			while 1:
+				time.sleep(0.5)
+				os.system(&#8216;service httpd stop&#8217;)
+				os.system(&#8216;echo &#39;Files Size changed ! danger !!!!&#39; > /home/lamer_detect.txt&#8217;)
+				print &#8216;\nAll Dead\n&#8217;
+				os.system(&#8216;python /root/kill.py&#8217;)
+			sys.exit(0)
+		print &#8216;pass , md5:&#8217;, md5
+
+&#8220;` 
+<br>This file is going to run and ban IPs requested by Robot.
+&#8220;`python ban.py https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/ban.py 
+#!/usr/bin/python 
+import os,hashlib,subprocess,signal,time,multiprocessing,time,sys,httplib,pickle,socket,re,urllib2 #import modules
+stop_event = multiprocessing.Event() 
+os.system(&#8216;netstat -ntu | awk &#39;{print $5}&#39; | cut -d: -f1 | sort | uniq -c | sort -n >> /root/IPs.txt&#8217;)
+os.system(&#8216;service apache2 stop&#8217;) 
+file = open(&#8216;/root/IPs.txt&#8217;)  
+for line in file:
+	ip = line
+	Ban = 0
+	word_num = 0
+	words = ip.split()
+	for text_word in words:
+		word_num += 1
+		if word_num is 1:
+			if int(text_word) > 20: 
+				Ban = 1
+			if word_num is 2:
+				if Ban is 1:
+					if &#8216;.&#8217; in text_word:
+						skip = 0
+						if &#8216;127.0.0.1&#8217; or &#8216;176.9.183.142&#8217; or &#8216;79.175.163.84&#8217; in text_word:
+							skip = 1
+						if skip is 0:	
+							deny = &#8216;iptables -I INPUT -s %s -j DROP&#8217; %text_word # it use iptables to ban users
+							os.system(deny)
+							deny = &#8216;iptables -A INPUT  -s %s -j DROP&#8217; %text_word
+							os.system(deny)
+							os.system(&#8216;service iptables-persistent save&#8217;)
+							os.system(&#8216;service iptables-persistent restart&#8217;)
+							ipsave = open(&#8216;/root/Banned.txt&#8217;,&#8217;a&#8217;) #save ip banned for me
+							ip_add = text_word + &#8216;\n&#8217;
+							ipsave.write(ip_add)
+							ipsave.close()				
+os.system(&#8216;rm -rf /root/IPs.txt&#8217;)		
+os.system(&#8216;service apache2 start&#8217;)
+
+&#8220;`
+
+And this file is going to check server [if crash or not open] from inside of your server
+
+&#8220;`python in.py https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/in.py
+#!/usr/bin/python
+import os,hashlib,subprocess,signal,time,multiprocessing,time,sys,httplib,pickle,socket,re,urllib2 #import modules
+stop_event = multiprocessing.Event()  #start multiprocessing
+Attack = 0
+while 1:
+	time.sleep(0.2)
+	try:
+		Ready_Target = &#8216;black-hg.org&#8217;  
+		connection = httplib.HTTPConnection(Ready_Target) 
+		connection.request(&#8220;GET&#8221;,&#8217;/&#8217;)
+		response = connection.getresponse()
+		E404 = &#8216;404&#8217;       
+		ENot = &#8216;Not Found&#8217; #
+		if E404 == response.status or E404 == response.reason or ENot == response.status or ENot == response.reason:
+			print &#8216;yes&#8217;			
+			time.sleep(0.1)
+		else:
+			print &#8216;yes&#8217;			
+			time.sleep(0.1)
+		E = 0
+	except httplib.HTTPException, e:
+		E = 1 
+		Attack += 1
+	except ValueError:
+		E = 1
+		Attack += 1
+	except socket.timeout:
+		E = 1
+		Attack += 1
+	except IOError:
+		E = 1
+		Attack += 1
+	if Attack is 10:
+		os.system(&#8216;python /root/ban.py&#8217;)
+		Attack = 0
+&#8220;`
+This file will check your server status from another host, you must change check.php file address and upload check.php on other hosting [you can use free hosting] and put url in this script. And notice you must change &#8216;z3r0d4y&#8217; word to your site title.
+&#8220;`python out.py https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/out.py
+#!/usr/bin/python
+import os,hashlib,subprocess,signal,time,multiprocessing,time,sys,httplib,pickle,socket,re,urllib2 #import modules
+stop_event = multiprocessing.Event()  #start multiprocessing 
+err_c = 0
+while 1:
+	time.sleep(0.5)
+	try:
+		opnurl = urllib2.urlopen(&#8216;http://z3r0d4y.com/check.php&#8217;).read()
+		E = 1
+		if &#8216;z3r0d4y&#8217; in opnurl:
+			E = 0
+	except:
+		E = 0
+		err_c += 1
+	if E is 1:
+		os.system(&#8216;python /root/ban.py&#8217;)
+		err_c = 0
+	if err_c is 100:
+		time.sleep(60)
+&#8220;`
+
+And now kill.py for stop process.
+&#8220;`python kill.py https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/kill.py
+#!/usr/bin/python
+#By Ali Razmjoo
+import os,hashlib,subprocess,signal,time,multiprocessing,time,sys,httplib,pickle,socket,re,urllib2 #import modules
+stop_event = multiprocessing.Event() #start multiprocessing
+os.system(&#8216;ps aux | grep .py > /root/id.txt&#8217;)
+f = open(&#8216;/root/id.txt&#8217;)
+for line in f:
+	line = line.rsplit()
+	try:
+		pid = int(line[1])
+		cmd = &#8216;kill -9 &#8217; + str(pid)
+		os.system(cmd)
+	except:
+		skip = 1
+&#8220;`
+At last check.php file content, It&#8217;s simple. Just a file open my site and print the content.
+&#8220;`php check.php https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/check.php
+<?php
+$homepage = file_get_contents('http://z3r0d4y.com/');
+if($homepage){
+echo $homepage
+}
+?>
+&#8220;`
+<br>Setup example:
+&#8220;`bash
+wget https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/service.zip?raw=true &#8211;no-check-certificate
+unzip service.zip
+cd service
+mv * ../
+cd ..
+rm -rf service
+cd daemon
+make
+&#8220;`
+If return you any error.
+&#8220;`bash
+yum install gcc
+gcc start-stop-daemon.c -o start-stop-daemon
+cp start-stop-daemon /usr/sbin/
+chmod 755 /usr/sbin/start-stop-daemon
+start-stop-daemon -V 
+#output: start-stop-daemon 1.9.18
+&#8220;`
+And then
+&#8220;`bash
+cd ..
+rm -rf daemon
+rm -rf service.zip
+mv zeroday /etc/init.d/
+chmod 755 /etc/init.d/zeroday
+mv *.py /root/
+cd /root/
+chmod 755 *.py
+&#8220;`
+And now run and edit md5.py
+&#8220;`bash
+#nano md5.py => replace public_html directory in line 13
+[root@localhost ~]# python md5.py     => output:
+d41d8cd98f00b204e9800998ecf8427e
+Stopping httpd:                                            [  OK  ]
+
+All Dead
+
+Killed
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+nano md5.py 
+&#8220;`
+Go to line 52 and replace this md5 with md5 inside file ,And try run it again.
+&#8220;`bash
+[root@localhost ~]# python md5.py
+d41d8cd98f00b204e9800998ecf8427e
+pass , md5: d41d8cd98f00b204e9800998ecf8427e
+d41d8cd98f00b204e9800998ecf8427e
+pass , md5: d41d8cd98f00b204e9800998ecf8427e
+d41d8cd98f00b204e9800998ecf8427e
+pass , md5: d41d8cd98f00b204e9800998ecf8427e
+&#8220;`
+Next step you have to replace php file link address in out.py at line 8. And now it&#8217;s working now.
+
+And now about that php file , you should replace your primary word to your site name or title and then upload it on other host [you can also use free hosting as i said before] and now your service working well.
+<br><br>So until now your server files if change , this robot will stop Apache webserver so it mean no one cannot upload any badware [ shell scripts or anything ] on your website or deface your website or if any DOS/DDOS attack or crashing happen it will ban attacker(s) IP and restart Apache webserver. this robot need to develop for working more easy and if I get more free time I&#8217;ll improve this and make it easy to work.
+<br><br>But now , about other 0day Vulnerabilities on wordpress or plugins [Or any CMS you used] , We need to filter something on GET and POST Requests but if you think I want start listing words same 
+&#8220;`html
+union
+select
+wget
+alert(
+wget
+curl
+information
+and bla bla
+&#8220;`
+You are so wrong, because it&#8217;s so ridicules and it bypass easy so the best way it&#8217;s filter these characters
+
+&#8220;`html
+!@#$%^&*()_+=-\|}{[]:&#8221;?><;'/.,
+```
+Note: I said filter GET and POST, It's just a example for inputs.<br><br>
+if we filter these characters most vulnerabilities will disable
+Examples:
+<br>RCE:
+&#8220;`php 
+cat /etc/passwd      =>  /     <=  This Char filtered by firewall
+ls -la		=> -
+echo 1 > 1	=>   >
+wget http://z3r0d4y.com/shell.txt	=> :// . .
+curl z3r0d4y.com	=> .
+rm -rf /	=> - /
+rm * 	=> *
+&#8220;`
+SQL:
+&#8220;`php
+Union Select 1,2,3,4,5 from admin&#8211;		=>  , -
+hex( , unhex( , grpup_contact( , bla bla	=> ( _
+&#8220;`
+XSS:
+&#8220;`php
+alert(		=> (
+<img		=> <
+scr=		=> =
+document.cookie		=> .
+&#8220;`
+
+LFI:
+&#8220;`php 
+/etc/passwd 	=> /
+../		=> . /
+&#8220;`
+and more &#8230; 
+<br><br>See everything filtered by a simple way, But it&#8217;s not all. Wordpress Admin panel and guest users need to send this chars. we should not block them from comment or block admin requests for send post or any jquery or java POSTs in admin panel. So we need a white list [Exception list] to Handle these. All you to do is put &#8220;wp-comments-post.php&#8221; file in white list for users comments and generate a random MD5 or any primary key for using on Admin user agent and handle in Exception. Then you can have your private key to be admin and login in admin panel, send your posts without any problem [My Suggestion is use Firefox UserAgent switcher Add-Ons]. Next Step is Handle your code in config.php and we done with our WAF.
+&#8220;`php waf.php https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/waf.php
+<?php
+$list_exceptions = array("/wp-comments-post.php");
+$list_deny = array("`",
+"~",
+"!",
+"@",
+"#",
+"$",
+"%",
+"^",
+"&",
+"*",
+"(",
+")",
+"-",
+"_",
+"+",
+"[",
+"]",
+"{",
+"}",
+"\\",
+"|",
+";",
+":",
+"'",
+'"',
+"<",
+">&#8221;,
+&#8221;?&#8221;,
+&#8221;/&#8221;,
+&#8221;,&#8221;,
+&#8221;.&#8221;,
+);
+$detect = 0;
+$get = 0;
+$post = 0;
+$protocol = strpos(strtolower($_SERVER[&#8216;SERVER_PROTOCOL&#8217;]),&#8217;https&#8217;) === FALSE ? &#8216;http&#8217; : &#8216;https&#8217;;
+$host = $_SERVER[&#8216;HTTP_HOST&#8217;];
+$script = $_SERVER[&#8216;SCRIPT_NAME&#8217;];
+$params = $_SERVER[&#8216;QUERY_STRING&#8217;];
+$currentUrl = $protocol . &#8216;://&#8217; . $host . $script . &#8216;?&#8217; . $params;
+$script = urldecode($script);
+$script = urldecode($script);
+$script = urldecode($script);
+$script = urldecode($script);
+$params = urldecode($params);
+$params = urldecode($params);
+$params = urldecode($params);
+$params = urldecode($params);
+$agent = $_SERVER[&#8216;HTTP_USER_AGENT&#8217;];
+
+for($i=0; $i<count($list_deny); $i++){
+	if(strpos($params,$list_deny[$i]) !== false){
+		$get = 1;
+		
+		for($j=0; $j<count($list_exceptions); $j++){
+			if(strpos($script,$list_exceptions[$j]) !== false){
+				$get = 0;
+			}
+		}
+		if($get == 1){
+				if(strpos($agent,'b00c52cac042640c440db9684a59ae36') == false){
+				$_GET = str_replace($list_deny[$i],"***[firewall]***",$_GET);
+				}
+		}
+	}
+}
+foreach($_POST as $key => $value){
+	$key = strtolower($key);
+	$value = strtolower($value);
+	for($i=0; $i<count($list_deny); $i++){
+		if(strpos($value,$list_deny[$i]) !== false){
+			$post = 1;
+			for($j=0; $j<count($list_exceptions); $j++){
+				if(strpos($script,$list_exceptions[$j]) !== false){
+					$post = 0;
+				}
+			}
+			if($post == 1){
+				if(strpos($agent,'b00c52cac042640c440db9684a59ae36') == false){
+				$_POST = str_replace($list_deny[$i],"***[firewall]***",$_POST);
+				}
+			}
+			}
+	}
+	}
+?>
+
+&#8220;`
+Note: If you want use this WAF on other CMS you must change white list and include it on cms config file.(config files usually included on all files in CMS that&#8217;s why we do that)
+
+And last thing about other services same cpanel,ssh and &#8230; , you must set IP limits with iptables for all of their ports number OR stop their services if you don&#8217;t need these, if you want to stop services don&#8217;t forgot for start them again you need CONSOLE ACCESS and if you don&#8217;t have console access , don&#8217;t disable them. disabling services protect you from 0Day Vulnerabilities that they are not public yet.
+
+until now we protected our website from 0Day vulnerabilities and protected our server with a simple ways for DOS/DDOS and deface or uploading.
+We didn&#8217;t config any IDS or IPS professional mode But be sure with doing these on your server be sure you protected so much
+
+But at last if you are same me and very stressful , get a domain , install octopress blogging on your system and upload your site on [github pages](http://pages.github.com/), be safe more than any VPS. But It&#8217;s not php and mysql hosting so it&#8217;s limit but prefect for simple blogging.
+
+Reference :
+<br>1- Sites that i shared URLs
+<br>2- Bash Code on [Google](http://google.com)
+<br>3- [ZeroDay Cyber Research](http://z3r0d4y.com)
+
+
+[Ali Razmjoo](mailto:Ali[dot]Razmjoo1994[at]Gmail[at]Com)
+
+<br><br>Last edit on: 2015/2/24 @18:41
