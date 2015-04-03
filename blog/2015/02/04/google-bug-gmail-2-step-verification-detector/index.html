@@ -9,7 +9,7 @@
   <meta name="author" content="Ali Razmjoo">
 
 
-  <meta name="description" content="As we know , Google SMTP is open for everyone. We can login from anywhere we want. The way is simple, We login from there and check what Gmail SMTP &hellip;">
+  <meta name="description" content="I decided to write about a Gmail Bug. It’s not a vulnerability of Gmail but it’s some kind of bug let us know if we hack a Gmail, we can login it or &hellip;">
 
   <meta name="keywords" content="z3r0d4y.com,z3r0d4y,zeroday,0day,gmail,bug,bypass google,bypass gmail,bypass sms auth gmail,sms gmail,gmail sms,bypass 2-step verification,python,exploit,google,how to">
 
@@ -128,12 +128,12 @@
   </header>
 
 
-<div class="entry-content"><p>Hello world! [ Include People , Robots, Zombies :D, Space Guys if they exists, and my friends I don&rsquo;t release what kind of things they really are :D (they seems kind of human that have lifetime access to computer) ] By the way today I want write about a Gmail Bug. It&rsquo;s not a vulnerability of Gmail but it&rsquo;s some kind of bug let us know if we hack a Gmail , we can login it or not without alert the Gmail owner. I talking about 2-Step verification , Think about you grab a Gmail password of your girl friend, o.O wrong again hackers don&rsquo;t have girl friend why I make this mistake again, So better think about you just got your victim Gmail password and you not sure to login or not , Because victim maybe use Gmail SMS auth service and when you click login , Google send victim a SMS that include a code for continue login. I got some way to test Gmail account before we login and test it if it have notification or not without he get any SMS. Keep reading for know how to do it.</p>
+<div class="entry-content"><p>Hello world! [ Including People , Robots, Zombies<span class="description">Dariush &amp; Arash</span>, Alien dudes if they exist, and my friends ], By the way, I decided to write about a Gmail Bug. It&rsquo;s not a vulnerability of Gmail but it&rsquo;s some kind of bug let us know if we hack a Gmail, we can login it or not without alert the Gmail owner. I talking about 2-Step verification, Imagine to grab a Gmail password and not be sure to login or not , victim might be use Gmail SMS auth service and when you click login, Google send victim a SMS which include a code to continue login. I got some way to test Gmail account before we login and test it if account have notification or not without any alert SMS. Keep reading to know how to do it.</p>
 
 <!-- more -->
 
 
-<p>As we know , Google SMTP is open for everyone. We can login from anywhere we want. The way is simple, We login from there and check what Gmail SMTP return to us. So now I using a python code to login my account that I activated 2-step protection on that and if anyone login it should send me a SMS.</p>
+<p>As we know , Google SMTP can be used to login Gmail from anywhere .so we login from there[SMTP] and check what Gmail SMTP return to us. So now I use a python code to login my account that I activated 2-step protection on that and if anyone login, it should send me a SMS.</p>
 
 <figure class='code'><figcaption><span>gmail.py</span><a href='https://github.com/Ali-Razmjoo/z3r0d4y/blob/master/gmail.py'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -146,28 +146,8 @@
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/python2.7</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">smtplib</span><span class="o">,</span><span class="nn">email</span><span class="o">,</span><span class="nn">os</span><span class="o">,</span><span class="nn">sys</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">email.MIMEMultipart</span> <span class="kn">import</span> <span class="n">MIMEMultipart</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">email.Utils</span> <span class="kn">import</span> <span class="n">COMMASPACE</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">email.MIMEText</span> <span class="kn">import</span> <span class="n">MIMEText</span>
-</span><span class='line'><span class="c">#from email.MIMEBase import MIMEBase</span>
-</span><span class='line'><span class="c">#from email.parser import Parser</span>
-</span><span class='line'><span class="c">#from email.MIMEImage import MIMEImage</span>
-</span><span class='line'><span class="c">#from email.MIMEAudio import MIMEAudio</span>
-</span><span class='line'><span class="c">#import mimetypes</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">email</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">email.mime.application</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">smtplib</span>
 </span><span class='line'><span class="n">user</span> <span class="o">=</span> <span class="s">&#39;xxx@gmail.com&#39;</span>
 </span><span class='line'><span class="n">passw</span> <span class="o">=</span> <span class="s">&#39;xxx&#39;</span>
 </span><span class='line'><span class="n">smtp_host</span> <span class="o">=</span> <span class="s">&#39;smtp.gmail.com&#39;</span>
@@ -201,7 +181,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Ohhh , Greate , because it&rsquo;s just telling me check out app password url and didn&rsquo;t send me any SMS. So it mean my password isn&rsquo;t wrong ! But to be sure I going to test this with wrong password.</p>
+<p>Ohhh , Greate , because it&rsquo;s just showing me check out app password url and didn&rsquo;t send me any SMS. So it means my password is not wrong ! But to be sure I&rsquo;m going to test this with wrong password.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -222,7 +202,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Now you can see different error. And let me test with other gmail long time I didn&rsquo;t use.</p>
+<p>Now you can see different result. And let me test it with another Gmail which for a long time I didn&rsquo;t use.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -253,7 +233,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Now Google telling me login with the browser. I don&rsquo;t care about that. But wait ! What if we use a Gmail account that we didn&rsquo;t ever use on our PC before. So I calling my friend now and take his Gmail password. And See the result.</p>
+<p>Now Google tells me use the browser to login. I don&rsquo;t care about error. But there&rsquo;s a point! What if we use a Gmail account which we didn&rsquo;t ever use on my PC till now. So I will use my friend&rsquo;s Gmail account and watch the result.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -274,13 +254,15 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>It seems my friend get me true password but he activated Gmail SMS Auth. So now we can see Google didn&rsquo;t try hard on this way. So when we have true password we can login and steal informations and if using Gmail SMS Auth but still we know what&rsquo;s true password just we need a little social engineering for login and steal information.
-<br>
-All we need now it&rsquo;s a script for make it automatic check the Gmail account just login with this script and read error to see what happe. If you think I going to make a automatic script for you and put code here , you are so wrong because I&rsquo;m so more lazy than you think.</p>
+<p>It seems my friend&rsquo;s been given me true password but he activated Gmail SMS auth. So now we can see that Google didn&rsquo;t work hard on this way. When we have true password, we can login and steal information and if victim using Gmail SMS auth, however, we know what&rsquo;s the true password and only need a little social engineering to login and steal information.
+All we need now it&rsquo;s a script to make it automatic check the Gmail account to login with this script and read error to see what happen. If you think I&rsquo;m going to make a automatic script for you, and put code here, I should tell you that, I am NOT.<br></p>
 
-<p><a href="mailto:Ali[dot]Razmjoo1994[at]Gmail[dot]Com">Ali Razmjoo</a></p>
+<h3>Reference</h3>
 
-<p><br><br><br>Last edit on: 2015/2/24 @18:53</p>
+
+<p><a href="http://z3r0d4y.com/">ZCR</a> <span class="description">Zeroday Cyber Research</span>
+<br><br><a href="mailto:Ali[dot]Razmjoo1994[at]Gmail[dot]Com">Ali Razmjoo</a>
+<br><br>Last edit on: 2015/4/1 @13:42</p>
 </div>
 
 
@@ -318,7 +300,7 @@ All we need now it&rsquo;s a script for make it automatic check the Gmail accoun
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://z3r0d4y.com/blog/2015/02/04/google-bug-gmail-2-step-verification-detector/" data-via="" data-counturl="http://z3r0d4y.com/blog/2015/02/04/google-bug-gmail-2-step-verification-detector/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://z3r0d4y.com/blog/2015/02/04/google-bug-gmail-2-step-verification-detector/" data-via="Ali_Razmjo0" data-counturl="http://z3r0d4y.com/blog/2015/02/04/google-bug-gmail-2-step-verification-detector/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
