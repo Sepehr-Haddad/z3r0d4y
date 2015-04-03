@@ -1,4 +1,5 @@
 <?php
+//Code By Ali Razmjoo
 #!@$%^&*()-_+=`~[]\{}|;':",./<>?
 $deny = array('#',
 '!',
