@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ios | ZeroDay Cyber Research]]></title>
+  <link href="http://z3r0d4y.com/blog/categories/ios/atom.xml" rel="self"/>
+  <link href="http://z3r0d4y.com/"/>
+  <updated>2015-05-09T13:15:05-04:00</updated>
+  <id>http://z3r0d4y.com/</id>
+  <author>
+    <name><![CDATA[Ali Razmjoo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[How to Bypass iPhone 6+ Ios 8.3 Emergency Call]]></title>
+    <link href="http://z3r0d4y.com/blog/2015/05/09/how-to-bypass-iphone-6-plus-ios-8-dot-3-emergency-call/"/>
+    <updated>2015-05-09T13:07:31-04:00</updated>
+    <id>http://z3r0d4y.com/blog/2015/05/09/how-to-bypass-iphone-6-plus-ios-8-dot-3-emergency-call</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+</feed>
