@@ -4,7 +4,7 @@
   <title><![CDATA[ZeroDay Cyber Research]]></title>
   <link href="http://z3r0d4y.com/atom.xml" rel="self"/>
   <link href="http://z3r0d4y.com/"/>
-  <updated>2015-05-09T13:15:05-04:00</updated>
+  <updated>2015-05-09T15:34:23-04:00</updated>
   <id>http://z3r0d4y.com/</id>
   <author>
     <name><![CDATA[Ali Razmjoo]]></name>
@@ -16,9 +16,29 @@
   <entry>
     <title type="html"><![CDATA[How to Bypass iPhone 6+ Ios 8.3 Emergency Call]]></title>
     <link href="http://z3r0d4y.com/blog/2015/05/09/how-to-bypass-iphone-6-plus-ios-8-dot-3-emergency-call/"/>
-    <updated>2015-05-09T13:07:31-04:00</updated>
+    <updated>2015-05-09T16:09:16-04:00</updated>
     <id>http://z3r0d4y.com/blog/2015/05/09/how-to-bypass-iphone-6-plus-ios-8-dot-3-emergency-call</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<p>Hello Guys, After several days I was busy at work, I come back with a new subject which you can see on top of this text. Before I start, I’ve to say my IOS is updated and version is 8.3. Keep reading to know more.</p>
+
+<!-- more -->
+
+
+<p>I don’t want make it hard to be understood, so I explain it basic and fast.
+All you need to do is to turn on WiFi or mobile internet data and lock the screen, as you can see, iPhone just let you to call emergency numbers [example: 911]. Now you hold the “Home” button and let Siri come up, Tell Siri to call anyone or any number.
+<br><br>For Example:
+<br>“Hey Siri, Call 09392841331”
+<br>“Call John”
+<br>“Call my father”
+<br>And also you can see the last number , whom you called and see your number [saved on contact]. To know better , <a href="https://www.youtube.com/watch?v=WY4x-cWeDvI&amp;feature=youtu.be">visit video on youtube</a>.</p>
+
+<iframe width="420" height="315"
+src="http://www.youtube.com/embed/WY4x-cWeDvI?autoplay=1">
+</iframe>
+
+
+<p><br>Thanks.</p>
+
+<p><br><a href="mailto:Ali[dot]Razmjoo1994[at]Gmail[at]Com">Ali Razmjoo</a></p>
 ]]></content>
   </entry>
   
