@@ -1,60 +1,135 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>http://z3r0d4y.com/blog/2015/05/09/how-to-bypass-iphone-6-plus-ios-8-dot-3-emergency-call/</loc>
-    <lastmod>2015-05-09T16:09:16-04:00</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>http://z3r0d4y.com/blog/2015/02/04/google-bug-gmail-2-step-verification-detector/</loc>
-    <lastmod>2015-02-04T18:00:00-05:00</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>http://z3r0d4y.com/blog/2015/02/04/how-to-setup-secure-website-for-hackers/</loc>
-    <lastmod>2015-02-04T11:00:45-05:00</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>http://z3r0d4y.com/</loc>
-    <lastmod>2015-05-09T16:02:52-04:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>http://z3r0d4y.com/blog/archives/</loc>
-    <lastmod>2015-05-09T16:02:52-04:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>http://z3r0d4y.com/dudes/</loc>
-    <lastmod>2015-05-09T16:02:52-04:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>http://z3r0d4y.com/zcr-waf/</loc>
-    <lastmod>2015-05-09T16:02:52-04:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>http://z3r0d4y.com/about/</loc>
-    <lastmod>2015-05-09T16:02:52-04:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>http://z3r0d4y.com/intro/</loc>
-    <lastmod>2015-05-09T16:02:52-04:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>http://z3r0d4y.com/efficiencies/</loc>
-    <lastmod>2015-05-09T16:02:52-04:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+<url>
+  <loc>http://z3r0d4y.com/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/archives/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/intro/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/efficiencies/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/about/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/dudes/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>1</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/2015/05/09/how-to-bypass-iphone-6-plus-ios-8-dot-3-emergency-call/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/2015/02/04/google-bug-gmail-2-step-verification-detector/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>1</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/2015/02/04/how-to-setup-secure-website-for-hackers/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>1</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/categories/bypass/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/categories/ios/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/categories/iphone/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/categories/bug/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/categories/gmail/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/categories/google/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/categories/python/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/categories/security/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/categories/config/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/categories/linux/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/blog/categories/waf/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>http://z3r0d4y.com/zcr-waf/</loc>
+  <lastmod>2015-05-09T21:05:18+00:00</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.64</priority>
+</url>
 </urlset>
